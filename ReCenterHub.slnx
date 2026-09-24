@@ -1,3 +1,4 @@
 <Solution>
+  <Project Path="Api/Api.csproj" Id="5c6dc3df-ae17-4ea8-8f29-b139e05b9813" />
   <Project Path="ReCenterHub/ReCenterHub.csproj" />
 </Solution>
