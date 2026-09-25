@@ -1,4 +1,10 @@
+using ReCenterHub.Services;
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddHttpContextAccessor();
+
+var apiUrl = builder.Configuration["ApiUrl"] ?? " ";
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -14,6 +20,15 @@ builder.Services.AddHttpClient("ReHubCenterApi", client =>
     }
 
     client.BaseAddress = new Uri(apiBaseUrl);
+});
+
+builder.Services.AddHttpClient<IndividualBookingService>(client =>
+{
+    client.BaseAddress = new Uri(apiUrl);
+});
+builder.Services.AddHttpClient<WorkshopBookingService>(client =>
+{
+    client.BaseAddress = new Uri(apiUrl);
 });
 
 var app = builder.Build();

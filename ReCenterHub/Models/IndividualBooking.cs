@@ -1,15 +1,20 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Api.Models
+namespace ReCenterHub.Models
 {
-    public class AddWorkshopBookingDTO
+    public class IndividualBooking
     {
+        [Key]
+        public int IndividualBookingID { get; set; }
+        public string UserId { get; set; }
 
-        [Display(Name = "Institution Name")]
-        public string InstitutionName { get; set; }
+        [Display(Name = "First Name")]
+        public string FirstName { get; set; }
 
-        [Display(Name = "Target Audience")]
-        public string TargetAudience { get; set; }
+        [Display(Name = "Surname")]
+        public string Surname { get; set; }
+
+        public string Category { get; set; }
 
         [Display(Name = "Phone Number")]
         public string PhoneNumber { get; set; }

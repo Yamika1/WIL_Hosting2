@@ -7,12 +7,8 @@ namespace Api.Models
         [Key]
         public int WorkshopBookingID { get; set; }
 
-        [Display(Name = "First Name")]
-        public string FirstName { get; set; }
-
-        [Display(Name = "Surname")]
-        public string Surname { get; set; }
-
+        [Display(Name = "Institution Name")]
+        public string InstitutionName { get; set; }
         public int Age { get; set; }
 
         [Display(Name = "Phone Number")]

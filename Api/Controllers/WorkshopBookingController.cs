@@ -59,9 +59,8 @@ namespace Api.Controllers
         {
             var WorkshopBooking = new WorkshopBooking()
             {
-                FirstName = WorkshopBookingentity.FirstName,
-                Surname = WorkshopBookingentity.Surname,
-                Age = WorkshopBookingentity.Age,
+                InstitutionName = WorkshopBookingentity.InstitutionName,
+                TargetAudience = WorkshopBookingentity.TargetAudience,
                 PhoneNumber = WorkshopBookingentity.PhoneNumber,
                 EmailAddress = WorkshopBookingentity.EmailAddress,
                 Date_and_Time = WorkshopBookingentity.Date_and_Time,
@@ -83,10 +82,9 @@ namespace Api.Controllers
             if (workshopBooking is null)
                 return NotFound();
 
-            workshopBooking.FirstName = WorkshopBookingentity.FirstName;
-            workshopBooking.Surname = WorkshopBookingentity.Surname;
+            workshopBooking.InstitutionName = WorkshopBookingentity.InstitutionName;
             workshopBooking.EmailAddress = WorkshopBookingentity.EmailAddress;
-            workshopBooking.Age = WorkshopBookingentity.Age;
+            workshopBooking.TargetAudience = WorkshopBookingentity.TargetAudience;
             workshopBooking.PhoneNumber = WorkshopBookingentity.PhoneNumber;
             workshopBooking.Date_and_Time = WorkshopBookingentity.Date_and_Time;
             workshopBooking.OptionalNotes = WorkshopBookingentity.OptionalNotes;
