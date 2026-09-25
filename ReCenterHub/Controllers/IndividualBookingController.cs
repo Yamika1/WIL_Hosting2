@@ -1,24 +1,37 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ReCenterHub.Models;
 using ReCenterHub.Services;
+using System.Net.NetworkInformation;
 
 namespace ReCenterHub.Controllers
 {
     public class IndividualBookingController : Controller
     {
         private readonly IndividualBookingService _ibs;
-        private readonly IWebHostEnvironment _environment;
+       
 
-        public IndividualBookingController(IndividualBookingService ibs, IWebHostEnvironment environment)
+        public IndividualBookingController(IndividualBookingService ibs)
         {
             _ibs = ibs;
-            _environment = environment;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(string? category, string? firstName, string? surname)
         {
             var getAllBookings = _ibs.GetAllIndividualBookingsAsync();
-            return View();
+
+            if (!string.IsNullOrEmpty(firstName) || !string.IsNullOrEmpty(surname))
+            {
+                var bookings = _ibs.SearchByFirstNameAndSurname(firstName, surname);
+                return View(bookings);
+            }
+
+            if (!string.IsNullOrEmpty(category))
+            {
+                var bookings =  _ibs.FilterByCategory(category);
+                return View(bookings);
+            }
+
+            return View(getAllBookings);
         }
 
 

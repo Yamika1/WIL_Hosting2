@@ -27,5 +27,7 @@ namespace ReCenterHub.Models
 
         [Display(Name = "Optional Notes")]
         public string? OptionalNotes { get; set; }
+
+        public string? Status { get; set; }
     }
 }
