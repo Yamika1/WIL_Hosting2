@@ -30,5 +30,8 @@ namespace Api.Models.Entities
         [Display(Name = "Topic")]
         public string? Topic { get; set; }
 
+        [Display(Name = "Status")]
+        public string? Status { get; set; }
+
     }
 }
