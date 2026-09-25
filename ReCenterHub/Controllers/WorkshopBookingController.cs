@@ -9,20 +9,34 @@ namespace ReCenterHub.Controllers
     public class WorkshopBookingController : Controller
     {
         private readonly WorkshopBookingService _wbs;
-        private readonly IWebHostEnvironment _environment;
+       
 
-        public WorkshopBookingController(WorkshopBookingService wbs, IWebHostEnvironment environment)
+        public WorkshopBookingController(WorkshopBookingService wbs)
         {
-            _wbs = wbs;
-            _environment = environment;
+            _wbs = wbs;  
         }
 
-        public IActionResult Index()
+        public IActionResult Index(string? topic, string? instituitionName)
         {
             var allBookings = _wbs.GetAllWorkshopBookingsAsync();
-            return View();
-        }
 
+            if (!string.IsNullOrEmpty(instituitionName))
+            {
+                var bookings = _wbs.SearchByInstitutionName(instituitionName);
+                return View(bookings);
+            }
+
+            if (!string.IsNullOrEmpty(topic))
+            {
+                var bookings = _wbs.FilterByTopic(topic);
+                return View(bookings);
+            }
+
+            return View(allBookings);
+        }
+        
+
+           
         [HttpGet]
         public IActionResult Create()
         {

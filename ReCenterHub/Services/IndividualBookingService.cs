@@ -1,4 +1,5 @@
 ﻿using ReCenterHub.Models;
+using System.Diagnostics.Contracts;
 
 namespace ReCenterHub.Services
 {
@@ -61,6 +62,27 @@ namespace ReCenterHub.Services
             return null;
 
         }
+
+        public async Task<List<IndividualBooking>?> SearchByFirstNameAndSurname(string firstName, string surname)
+        {
+            var response = await _httpClient.GetAsync($"api/IndividualBooking/SearchByFirstNameAndSurname?firstName={firstName}&surname={surname}");
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<List<IndividualBooking>>();
+            }
+            return null;
+        }
+
+        public async Task<List<IndividualBooking>?> FilterByCategory(string category)
+        {
+            var response = await _httpClient.GetAsync($"api/IndividualBooking/FilterByCategory?category={category}");
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<List<IndividualBooking>>();
+            }
+            return null;
+        }
+
 
 
 
