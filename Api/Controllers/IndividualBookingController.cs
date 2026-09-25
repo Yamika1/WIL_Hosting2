@@ -68,7 +68,8 @@ namespace Api.Controllers
                 PhoneNumber = individualBookingentity.PhoneNumber,
                 EmailAddress = individualBookingentity.EmailAddress,
                 Date_and_Time = individualBookingentity.Date_and_Time,
-                OptionalNotes = individualBookingentity.OptionalNotes
+                OptionalNotes = individualBookingentity.OptionalNotes,
+                
             };
 
             _authDbContext.IndividualBooking.Add(individualBooking);
