@@ -7,8 +7,7 @@ namespace ReCenterHub.Controllers
 {
     public class IndividualBookingController : Controller
     {
-        private readonly IndividualBookingService _ibs;
-       
+        private readonly IndividualBookingService _ibs;  
 
         public IndividualBookingController(IndividualBookingService ibs)
         {
