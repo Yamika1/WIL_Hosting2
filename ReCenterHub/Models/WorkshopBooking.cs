@@ -1,13 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Api.Models.Entities
+namespace ReCenterHub.Models
 {
     public class WorkshopBooking
     {
-        [Key] 
+        [Key]
         public int WorkshopBookingID { get; set; }
-        public string UserId { get; set; }     
-
+        public string UserId { get; set; }
 
         [Display(Name = "Institution Name")]
         public string InstitutionName { get; set; }
@@ -15,16 +14,16 @@ namespace Api.Models.Entities
         [Display(Name = "Target Audience")]
         public string TargetAudience { get; set; }
 
-        [Display(Name = "Phone Number")] 
+        [Display(Name = "Phone Number")]
         public string PhoneNumber { get; set; }
 
-        [Display(Name = "Email Address")] 
+        [Display(Name = "Email Address")]
         public string EmailAddress { get; set; }
 
-        [Display(Name = "Date and Time")] 
+        [Display(Name = "Date and Time")]
         public DateTime Date_and_Time { get; set; }
 
-        [Display(Name = "Optional Notes")] 
+        [Display(Name = "Optional Notes")]
         public string? OptionalNotes { get; set; }
     }
 }
