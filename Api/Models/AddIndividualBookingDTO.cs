@@ -23,5 +23,8 @@ namespace Api.Models
 
         [Display(Name = "Optional Notes")]
         public string? OptionalNotes { get; set; }
+
+        [Display(Name = "Status")]
+        public string? Status { get; set; }
     }
 }

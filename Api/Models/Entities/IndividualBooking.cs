@@ -27,5 +27,8 @@ namespace Api.Models.Entities
 
         [Display(Name = "Optional Notes")] 
         public string? OptionalNotes { get; set; }
+
+        [Display(Name = "Status")]
+        public string? Status { get; set; }
     }
 }
