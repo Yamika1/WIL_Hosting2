@@ -2,7 +2,7 @@
 using ReCenterHub.Models;
 using ReCenterHub.Services;
 using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.Contracts;
+
 
 namespace ReCenterHub.Controllers
 {
@@ -16,9 +16,11 @@ namespace ReCenterHub.Controllers
             _wbs = wbs;  
         }
 
-        public IActionResult Index(string? topic, string? instituitionName)
+        public async Task<IActionResult> Index(string? topic, string? instituitionName)
         {
             var allBookings = _wbs.GetAllWorkshopBookingsAsync();
+
+            var upcomingSessions = await _wbs.UpcomingSessions();
 
             if (!string.IsNullOrEmpty(instituitionName))
             {
