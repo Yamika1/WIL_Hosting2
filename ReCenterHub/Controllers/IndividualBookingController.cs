@@ -7,18 +7,17 @@ namespace ReCenterHub.Controllers
 {
     public class IndividualBookingController : Controller
     {
-        private readonly IndividualBookingService _ibs;
-       
+        private readonly IndividualBookingService _ibs;  
 
         public IndividualBookingController(IndividualBookingService ibs)
         {
             _ibs = ibs;
         }
 
-        public IActionResult Index(string? category, string? firstName, string? surname)
+        public async Task<IActionResult> Index(string? category, string? firstName, string? surname)
         {
             var getAllBookings = _ibs.GetAllIndividualBookingsAsync();
-
+            var upcomingSessions = await _ibs.UpcomingSessions();
             if (!string.IsNullOrEmpty(firstName) || !string.IsNullOrEmpty(surname))
             {
                 var bookings = _ibs.SearchByFirstNameAndSurname(firstName, surname);
@@ -103,6 +102,8 @@ namespace ReCenterHub.Controllers
             await _ibs.Delete(booking);
             return RedirectToAction(nameof(Index));
         }
+
+
     }
 }
 

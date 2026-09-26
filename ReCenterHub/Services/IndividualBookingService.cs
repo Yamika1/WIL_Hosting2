@@ -1,16 +1,18 @@
-﻿using ReCenterHub.Models;
-using System.Diagnostics.Contracts;
+﻿using Microsoft.Identity.Client;
+using ReCenterHub.Models;
+
 
 namespace ReCenterHub.Services
 {
     public class IndividualBookingService
     {
         private readonly HttpClient _httpClient;
+        
 
         public IndividualBookingService(HttpClient httpClient)
         {
              _httpClient = httpClient;
-
+             
         }
 
         public async Task<IndividualBooking?> CreateAsync(IndividualBooking request)
@@ -82,6 +84,19 @@ namespace ReCenterHub.Services
             }
             return null;
         }
+
+        public async Task<List<IndividualBooking>> UpcomingSessions()
+        {
+            List<IndividualBooking> upcomingSessions = new List<IndividualBooking>();
+            var allbookings = await GetAllIndividualBookingsAsync();
+            upcomingSessions = allbookings.Where(b => b.Date_and_Time > DateTime.Now && b.Status == "Scheduled" || b.Status == "Rescheduled").ToList();
+            return upcomingSessions;
+
+        }
+
+        
+
+          
 
 
 

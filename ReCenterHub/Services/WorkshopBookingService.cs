@@ -82,6 +82,15 @@ namespace ReCenterHub.Services
             return null;
         }
 
+        public async Task<List<WorkshopBooking>> UpcomingSessions()
+        {
+            List<WorkshopBooking> upcomingSessions = new List<WorkshopBooking>();
+            var allbookings = await GetAllWorkshopBookingsAsync();
+            upcomingSessions = allbookings.Where(b => b.Date_and_Time > DateTime.Now && b.Status == "Scheduled" || b.Status == "Rescheduled").ToList();
+            return upcomingSessions;
+
+        }
+
 
 
 
