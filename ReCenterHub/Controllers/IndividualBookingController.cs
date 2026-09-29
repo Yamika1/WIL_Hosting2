@@ -17,7 +17,9 @@ namespace ReCenterHub.Controllers
         public async Task<IActionResult> Index(string? category, string? firstName, string? surname)
         {
             var getAllBookings = _ibs.GetAllIndividualBookingsAsync();
+
             var upcomingSessions = await _ibs.UpcomingSessions();
+
             if (!string.IsNullOrEmpty(firstName) || !string.IsNullOrEmpty(surname))
             {
                 var bookings = _ibs.SearchByFirstNameAndSurname(firstName, surname);
