@@ -2,6 +2,6 @@
 {
     public interface IObserver
     {
-        string Update(string message);
+        string Update(int newBookingCount);
     }
 }

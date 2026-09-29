@@ -11,9 +11,9 @@
                 _newBookingCount = newBookingCount;
             }
 
-            public string Update(string message)
+            public string Update(int newBookingCount)
             {
-                message = $"You now have {_newBookingCount} new booking/s.";
+                string message = $"You now have {_newBookingCount} new booking/s.";
                 return message;
             }
         }

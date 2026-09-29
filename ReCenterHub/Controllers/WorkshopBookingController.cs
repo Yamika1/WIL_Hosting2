@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using ReCenterHub.Models;
 using ReCenterHub.Services;
 using System.ComponentModel.DataAnnotations;
+using static ReCenterHub.Services.ConcreteObserver;
 
 
 namespace ReCenterHub.Controllers
@@ -11,11 +12,14 @@ namespace ReCenterHub.Controllers
     public class WorkshopBookingController : Controller
     {
         private readonly WorkshopBookingService _wbs;
-       
+        private readonly Notifier _notifier;
+        public int newBookingCount = 0;
 
-        public WorkshopBookingController(WorkshopBookingService wbs)
+
+        public WorkshopBookingController(WorkshopBookingService wbs, Notifier notifier)
         {
-            _wbs = wbs;  
+            _wbs = wbs;
+            _notifier = notifier;
         }
 
         public async Task<IActionResult> Index(string? topic, string? instituitionName)
@@ -56,7 +60,16 @@ namespace ReCenterHub.Controllers
             {
                 try
                 {
+                    var admin = new Notification(newBookingCount);
+                    _notifier.Subscribe(admin);
+
                     await _wbs.CreateAsync(wb);
+
+                    newBookingCount++;
+                    _notifier.Notify(newBookingCount);
+                    string notificationMessage = " You now have " + newBookingCount + " new booking/s.";
+                    TempData["Notification"] = notificationMessage;
+
                     return RedirectToAction(nameof(Index));
                 }
                 catch (ArgumentException ex)

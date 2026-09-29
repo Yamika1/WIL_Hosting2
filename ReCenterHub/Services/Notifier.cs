@@ -14,14 +14,15 @@
             _observers.Remove(observer);
         }
 
-        public string Notify(int newBookingCount)
+        public void Notify(int newBookingCount)
         {
             string message = $"You now have {newBookingCount} new booking/s.";
+
             foreach (var observer in _observers)
             {
-                observer.Update(message);
+                observer.Update(newBookingCount);
             }
-            return message;
+            
         }
 
 
