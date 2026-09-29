@@ -1,19 +1,36 @@
 ﻿using ReCenterHub.Models;
+using System.Net.Http.Headers;
 
 namespace ReCenterHub.Services
 {
     public class WorkshopBookingService
     {
         private readonly HttpClient _httpClient;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public WorkshopBookingService(HttpClient httpClient)
+
+        public WorkshopBookingService(HttpClient httpClient, IHttpContextAccessor httpContextAccessor)
         {
             _httpClient = httpClient;
+            _httpContextAccessor = httpContextAccessor;
+        }
 
+        private void AddToken()
+        {
+            var token = _httpContextAccessor.HttpContext?
+                .Session.GetString("AccessToken");
+
+            if (!string.IsNullOrEmpty(token))
+            {
+                _httpClient.DefaultRequestHeaders.Authorization =
+                    new AuthenticationHeaderValue("Bearer", token);
+            }
         }
 
         public async Task<WorkshopBooking?> CreateAsync(WorkshopBooking request)
         {
+            AddToken();
+
             var response = await _httpClient.PostAsJsonAsync("api/WorkshopBooking/", request);
             if (!response.IsSuccessStatusCode)
             {
@@ -25,6 +42,8 @@ namespace ReCenterHub.Services
 
         public async Task<List<WorkshopBooking>?> GetAllWorkshopBookingsAsync()
         {
+            AddToken();
+
             var response = await _httpClient.GetAsync("api/WorkshopBooking/");
             if (!response.IsSuccessStatusCode)
             {
@@ -36,6 +55,8 @@ namespace ReCenterHub.Services
 
         public async Task<WorkshopBooking?> UpdateAsync(WorkshopBooking request)
         {
+            AddToken();
+
             var response = await _httpClient.PutAsJsonAsync($"api/WorkshopBooking/{request.WorkshopBookingID}", request);
             if (!response.IsSuccessStatusCode)
             {
@@ -47,12 +68,16 @@ namespace ReCenterHub.Services
 
         public async Task<bool> Delete(WorkshopBooking request)
         {
+            AddToken();
+
             var response = await _httpClient.DeleteAsync($"api/WorkshopBooking/{request.WorkshopBookingID}");
             return response.IsSuccessStatusCode;
         }
 
         public async Task<WorkshopBooking?> GetWorkshopBookingByIdAsync(int id)
         {
+            AddToken();
+
             var response = await _httpClient.GetAsync($"api/WorkshopBooking/{id}");
             if (response.IsSuccessStatusCode)
             {

@@ -62,6 +62,8 @@ namespace Api.Controllers
             {
                 InstitutionName = WorkshopBookingentity.InstitutionName,
                 TargetAudience = WorkshopBookingentity.TargetAudience,
+                Topic = WorkshopBookingentity.Topic,
+                Status = WorkshopBookingentity.Status,
                 PhoneNumber = WorkshopBookingentity.PhoneNumber,
                 EmailAddress = WorkshopBookingentity.EmailAddress,
                 Date_and_Time = WorkshopBookingentity.Date_and_Time,
@@ -84,8 +86,10 @@ namespace Api.Controllers
                 return NotFound();
 
             workshopBooking.InstitutionName = WorkshopBookingentity.InstitutionName;
-            workshopBooking.EmailAddress = WorkshopBookingentity.EmailAddress;
             workshopBooking.TargetAudience = WorkshopBookingentity.TargetAudience;
+            workshopBooking.EmailAddress = WorkshopBookingentity.EmailAddress;
+            workshopBooking.Status = WorkshopBookingentity.Status;
+            workshopBooking.Topic = WorkshopBookingentity.Topic;
             workshopBooking.PhoneNumber = WorkshopBookingentity.PhoneNumber;
             workshopBooking.Date_and_Time = WorkshopBookingentity.Date_and_Time;
             workshopBooking.OptionalNotes = WorkshopBookingentity.OptionalNotes;

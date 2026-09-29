@@ -2,9 +2,11 @@
 using ReCenterHub.Models;
 using ReCenterHub.Services;
 using System.Net.NetworkInformation;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ReCenterHub.Controllers
 {
+    [Authorize(Roles = "Client")]
     public class IndividualBookingController : Controller
     {
         private readonly IndividualBookingService _ibs;  

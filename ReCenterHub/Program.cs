@@ -1,35 +1,32 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
 using ReCenterHub.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddHttpContextAccessor();
-
-var apiUrl = builder.Configuration["ApiUrl"] ?? " ";
-
-// Add services to the container.
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddHttpClient("ReHubCenterApi", client =>
-{
-    var apiBaseUrl = builder.Configuration["ApiSettings:BaseUrl"];
+builder.Services.AddHttpContextAccessor();
 
-    if (string.IsNullOrWhiteSpace(apiBaseUrl))
+builder.Services.AddHttpClient<ApiAuthService>(client =>
+{
+    client.BaseAddress = new Uri("https://localhost:7182/");
+});
+
+builder.Services.AddDistributedMemoryCache();
+
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
     {
-        throw new InvalidOperationException(
-            "ApiSettings:BaseUrl is not configured.");
-    }
-
-    client.BaseAddress = new Uri(apiBaseUrl);
-});
-
-builder.Services.AddHttpClient<IndividualBookingService>(client =>
-{
-    client.BaseAddress = new Uri(apiUrl);
-});
-builder.Services.AddHttpClient<WorkshopBookingService>(client =>
-{
-    client.BaseAddress = new Uri(apiUrl);
-});
+        options.LoginPath = "/Account/Login";
+        options.AccessDeniedPath = "/Home/AccessDenied";
+    });
 
 var app = builder.Build();
 
@@ -43,7 +40,8 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseRouting();
-
+app.UseSession();
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using ReCenterHub.Models;
 using ReCenterHub.Services;
 using System.ComponentModel.DataAnnotations;
@@ -6,6 +7,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ReCenterHub.Controllers
 {
+    [Authorize(Roles = "Client")]
     public class WorkshopBookingController : Controller
     {
         private readonly WorkshopBookingService _wbs;
