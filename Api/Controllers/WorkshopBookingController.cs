@@ -62,6 +62,8 @@ namespace Api.Controllers
             {
                 InstitutionName = WorkshopBookingentity.InstitutionName,
                 TargetAudience = WorkshopBookingentity.TargetAudience,
+                Topic = WorkshopBookingentity.Topic,
+                Status = WorkshopBookingentity.Status,
                 PhoneNumber = WorkshopBookingentity.PhoneNumber,
                 EmailAddress = WorkshopBookingentity.EmailAddress,
                 Date_and_Time = WorkshopBookingentity.Date_and_Time,
@@ -84,8 +86,10 @@ namespace Api.Controllers
                 return NotFound();
 
             workshopBooking.InstitutionName = WorkshopBookingentity.InstitutionName;
-            workshopBooking.EmailAddress = WorkshopBookingentity.EmailAddress;
             workshopBooking.TargetAudience = WorkshopBookingentity.TargetAudience;
+            workshopBooking.EmailAddress = WorkshopBookingentity.EmailAddress;
+            workshopBooking.Status = WorkshopBookingentity.Status;
+            workshopBooking.Topic = WorkshopBookingentity.Topic;
             workshopBooking.PhoneNumber = WorkshopBookingentity.PhoneNumber;
             workshopBooking.Date_and_Time = WorkshopBookingentity.Date_and_Time;
             workshopBooking.OptionalNotes = WorkshopBookingentity.OptionalNotes;
@@ -107,23 +111,6 @@ namespace Api.Controllers
             _authDbContext.WorkshopBooking.Remove(workshopBooking);
             _authDbContext.SaveChanges();
             return Ok();
-        }
-
-        [HttpGet("SearchByInstitutionName")]
-        public IEnumerable<WorkshopBooking> SearchByInstitutionName(string institutionName)
-        {
-            var statusQuery = from booking in _authDbContext.WorkshopBooking select booking;
-            var searchResults = statusQuery.Include(c => c.WorkshopBookingID).Where(c => c.InstitutionName == institutionName);
-            return searchResults.ToList();
-        }
-
-        [HttpGet("FilterByTopic")]
-        public IEnumerable<WorkshopBooking> FilterByTopic(string topic)
-        {
-            var statusQuery = from booking in _authDbContext.WorkshopBooking select booking;
-            var searchResults = statusQuery.Include(c => c.WorkshopBookingID).Where(c => c.Topic == topic);
-            return searchResults.ToList();
-
         }
 
 

@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Diagnostics.Contracts;
 using System.Net.Sockets;
 using System.Security.Claims;
 
@@ -43,7 +42,7 @@ namespace Api.Controllers
         }
 
         [HttpGet("client-bookings")]
-        [Authorize(Roles ="Client")]
+        [Authorize(Roles = "Client")]
         public IActionResult GetClientBookings()
         {
             var userId = User.FindFirstValue(
@@ -68,8 +67,7 @@ namespace Api.Controllers
                 PhoneNumber = individualBookingentity.PhoneNumber,
                 EmailAddress = individualBookingentity.EmailAddress,
                 Date_and_Time = individualBookingentity.Date_and_Time,
-                OptionalNotes = individualBookingentity.OptionalNotes,
-                
+                OptionalNotes = individualBookingentity.OptionalNotes
             };
 
             _authDbContext.IndividualBooking.Add(individualBooking);
@@ -112,25 +110,6 @@ namespace Api.Controllers
             _authDbContext.IndividualBooking.Remove(indivdualBooking);
             _authDbContext.SaveChanges();
             return Ok();
-        }
-
-
-        [HttpGet("SearchByFirstNameAndSurname")]
-        public IEnumerable<IndividualBooking> SearchByFirstNameAndSurname(string firstName, string lastName)
-        {
-            var statusQuery = from booking in _authDbContext.IndividualBooking select booking;
-            var searchResults = statusQuery.Include(c => c.IndividualBookingID).Where(c => c.FirstName == firstName || c.Surname == lastName);
-            return searchResults.ToList();
-
-        }
-
-        [HttpGet("FilterByCategory")]
-        public IEnumerable<IndividualBooking> FilterByCategory(string category)
-        {
-            var statusQuery = from booking in _authDbContext.IndividualBooking select booking;
-            var searchResults = statusQuery.Include(c => c.IndividualBookingID).Where(c => c.Category == category);
-            return searchResults.ToList();
-
         }
 
 
