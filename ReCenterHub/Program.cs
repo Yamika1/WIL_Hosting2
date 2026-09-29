@@ -7,7 +7,7 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddHttpClient<ApiAuthService>(client =>
 {
-    client.BaseAddress = new Uri("https://localhost:7251/");
+    client.BaseAddress = new Uri("https://localhost:7182/");
 });
 
 builder.Services.AddDistributedMemoryCache();
