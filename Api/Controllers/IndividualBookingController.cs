@@ -21,25 +21,7 @@ namespace Api.Controllers
             _authDbContext = authDbContext;
         }
 
-        [HttpGet]
-        [Authorize(Roles = "Admin")]
-        public IActionResult GetAllBookings()
-        {
-            return Ok(_authDbContext.IndividualBooking.ToList());
-        }
 
-        [HttpGet]
-        [Route("{id:int}")]
-        [Authorize(Roles = "Admin")]
-        public IActionResult GetBookingsById(int id)
-        {
-            var individualBooking = _authDbContext.IndividualBooking.Find(id);
-
-            if (individualBooking is null)
-                return NotFound();
-
-            return Ok(individualBooking);
-        }
 
         [HttpGet("client-bookings")]
         [Authorize(Roles = "Client")]
@@ -59,59 +41,64 @@ namespace Api.Controllers
         [Authorize(Roles = "Client")]
         public IActionResult AddIndividualBookings(AddIndividualBookingDTO individualBookingentity)
         {
-            var individualBooking = new IndividualBooking()
+            
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                var individualBooking = new IndividualBooking()
+                {
+                    UserId = userId,
+                    FirstName = individualBookingentity.FirstName,
+                    Surname = individualBookingentity.Surname,
+                    Category = individualBookingentity.Category,
+                    PhoneNumber = individualBookingentity.PhoneNumber,
+                    EmailAddress = individualBookingentity.EmailAddress,
+                    Date_and_Time = individualBookingentity.Date_and_Time,
+                    OptionalNotes = individualBookingentity.OptionalNotes
+                };
+
+                _authDbContext.IndividualBooking.Add(individualBooking);
+                _authDbContext.SaveChanges();
+                return Ok(individualBookingentity);
+            }
+
+            [HttpPut]
+            [Route("{id:int}")]
+            [Authorize(Roles = "Client")]
+            public IActionResult UpdateBooking(int id, UpdateIndividualBookingDTO individualBookingentity)
             {
-                FirstName = individualBookingentity.FirstName,
-                Surname = individualBookingentity.Surname,
-                Category = individualBookingentity.Category,
-                PhoneNumber = individualBookingentity.PhoneNumber,
-                EmailAddress = individualBookingentity.EmailAddress,
-                Date_and_Time = individualBookingentity.Date_and_Time,
-                OptionalNotes = individualBookingentity.OptionalNotes
-            };
+             
+                var individualBooking = _authDbContext.IndividualBooking.Find(id);
 
-            _authDbContext.IndividualBooking.Add(individualBooking);
-            _authDbContext.SaveChanges();
-            return Ok(individualBookingentity);
+                if (individualBooking is null)
+                    return NotFound();
+
+                individualBooking.FirstName = individualBookingentity.FirstName;
+                individualBooking.Surname = individualBookingentity.Surname;
+                individualBooking.EmailAddress = individualBookingentity.EmailAddress;
+                individualBooking.Category = individualBookingentity.Category;
+                individualBooking.PhoneNumber = individualBookingentity.PhoneNumber;
+                individualBooking.Date_and_Time = individualBookingentity.Date_and_Time;
+                individualBooking.OptionalNotes = individualBookingentity.OptionalNotes;
+
+                _authDbContext.SaveChanges();
+                return Ok(individualBooking);
+            }
+
+            [HttpDelete]
+            [Route("{id:int}")]
+            [Authorize(Roles = "Client")]
+            public IActionResult DeleteBooking(int id)
+            {
+                var indivdualBooking = _authDbContext.IndividualBooking.Find(id);
+
+                if (indivdualBooking is null)
+                    return NotFound();
+
+                _authDbContext.IndividualBooking.Remove(indivdualBooking);
+                _authDbContext.SaveChanges();
+                return Ok();
+            }
+
+
         }
-
-        [HttpPut]
-        [Route("{id:int}")]
-        [Authorize(Roles = "Admin")]
-        public IActionResult UpdateBooking(int id, UpdateIndividualBookingDTO individualBookingentity)
-        {
-            var individualBooking = _authDbContext.IndividualBooking.Find(id);
-
-            if (individualBooking is null)
-                return NotFound();
-
-            individualBooking.FirstName = individualBookingentity.FirstName;
-            individualBooking.Surname = individualBookingentity.Surname;
-            individualBooking.EmailAddress = individualBookingentity.EmailAddress;
-            individualBooking.Category = individualBookingentity.Category;
-            individualBooking.PhoneNumber = individualBookingentity.PhoneNumber;
-            individualBooking.Date_and_Time = individualBookingentity.Date_and_Time;
-            individualBooking.OptionalNotes = individualBookingentity.OptionalNotes;
-
-            _authDbContext.SaveChanges();
-            return Ok(individualBooking);
-        }
-
-        [HttpDelete]
-        [Route("{id:int}")]
-        [Authorize(Roles = "Admin")]
-        public IActionResult DeleteBooking(int id)
-        {
-            var indivdualBooking = _authDbContext.IndividualBooking.Find(id);
-
-            if (indivdualBooking is null)
-                return NotFound();
-
-            _authDbContext.IndividualBooking.Remove(indivdualBooking);
-            _authDbContext.SaveChanges();
-            return Ok();
-        }
-
-
     }
-}

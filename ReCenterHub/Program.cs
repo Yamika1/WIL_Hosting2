@@ -5,6 +5,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddHttpContextAccessor();
+
 builder.Services.AddHttpClient<ApiAuthService>(client =>
 {
     client.BaseAddress = new Uri("https://localhost:7182/");

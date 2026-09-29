@@ -1,5 +1,6 @@
 ﻿using Microsoft.Identity.Client;
 using ReCenterHub.Models;
+using System.Net.Http.Headers;
 
 
 namespace ReCenterHub.Services
@@ -7,16 +8,29 @@ namespace ReCenterHub.Services
     public class IndividualBookingService
     {
         private readonly HttpClient _httpClient;
-        
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public IndividualBookingService(HttpClient httpClient)
+        public IndividualBookingService(HttpClient httpClient, IHttpContextAccessor httpContextAccessor)
         {
              _httpClient = httpClient;
-             
+            _httpContextAccessor = httpContextAccessor;
+        }
+        private void AddToken()
+        {
+            var token = _httpContextAccessor.HttpContext?
+                .Session.GetString("AccessToken");
+
+            if (!string.IsNullOrEmpty(token))
+            {
+                _httpClient.DefaultRequestHeaders.Authorization =
+                    new AuthenticationHeaderValue("Bearer", token);
+            }
         }
 
         public async Task<IndividualBooking?> CreateAsync(IndividualBooking request)
         {
+            AddToken();
+
             var response = await _httpClient.PostAsJsonAsync("api/IndividualBooking/", request);
              if (!response.IsSuccessStatusCode) 
             {
@@ -28,7 +42,9 @@ namespace ReCenterHub.Services
 
         public async Task<List<IndividualBooking>?> GetAllIndividualBookingsAsync()
         {
-            var response = await _httpClient.GetAsync("api/IndividualBooking/");
+            AddToken();
+
+            var response = await _httpClient.GetAsync("api/IndividualBooking/client-bookings");
             if (!response.IsSuccessStatusCode)
             {
                 return null;
@@ -39,6 +55,8 @@ namespace ReCenterHub.Services
 
         public async Task<IndividualBooking?> UpdateAsync(IndividualBooking request)
         {
+            AddToken();
+
             var response = await _httpClient.PutAsJsonAsync($"api/IndividualBooking/{request.IndividualBookingID}", request);
             if (!response.IsSuccessStatusCode)
             {
@@ -50,12 +68,16 @@ namespace ReCenterHub.Services
 
         public async Task<bool> Delete(IndividualBooking request)
         {
+            AddToken();
             var response = await _httpClient.DeleteAsync($"api/IndividualBooking/{request.IndividualBookingID}");
             return response.IsSuccessStatusCode;
         }
 
         public async Task<IndividualBooking?> GetIndividualBookingByIdAsync(int id)
         {
+
+            AddToken();
+
             var response = await _httpClient.GetAsync($"api/IndividualBooking/{id}");
             if (response.IsSuccessStatusCode)
             {
