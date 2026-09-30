@@ -1,6 +1,7 @@
 ﻿using Microsoft.Identity.Client;
 using ReCenterHub.Models;
 using System.Net.Http.Headers;
+using static ReCenterHub.Services.ConcreteObserver;
 
 
 namespace ReCenterHub.Services
@@ -10,10 +11,12 @@ namespace ReCenterHub.Services
         private readonly HttpClient _httpClient;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
+        
         public IndividualBookingService(HttpClient httpClient, IHttpContextAccessor httpContextAccessor)
         {
              _httpClient = httpClient;
             _httpContextAccessor = httpContextAccessor;
+            
         }
         private void AddToken()
         {
@@ -29,15 +32,14 @@ namespace ReCenterHub.Services
 
         public async Task<IndividualBooking?> CreateAsync(IndividualBooking request)
         {
-            AddToken();
-
+            AddToken(); 
             var response = await _httpClient.PostAsJsonAsync("api/IndividualBooking/", request);
              if (!response.IsSuccessStatusCode) 
             {
                 return null;
             }
-            return await response.Content.ReadFromJsonAsync<IndividualBooking>();
 
+            return await response.Content.ReadFromJsonAsync<IndividualBooking>();
         }
 
         public async Task<List<IndividualBooking>?> GetAllIndividualBookingsAsync()

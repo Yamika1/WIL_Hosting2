@@ -113,6 +113,24 @@ namespace Api.Controllers
             return Ok();
         }
 
+        [HttpGet("SearchByInstitutionName")]
+        public IEnumerable<WorkshopBooking> SearchByInstitutionName(string institutionName)
+        {
+            var statusQuery = from booking in _authDbContext.WorkshopBooking select booking;
+            var searchResults = statusQuery.Include(c => c.WorkshopBookingID).Where(c => c.InstitutionName == institutionName);
+            return searchResults.ToList();
+        }
+
+        [HttpGet("FilterByTopic")]
+        public IEnumerable<WorkshopBooking> FilterByTopic(string topic)
+        {
+            var statusQuery = from booking in _authDbContext.WorkshopBooking select booking;
+            var searchResults = statusQuery.Include(c => c.WorkshopBookingID).Where(c => c.Topic == topic);
+            return searchResults.ToList();
+
+        }
+        
+
 
     }
 }

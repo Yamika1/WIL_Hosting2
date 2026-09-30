@@ -4,10 +4,22 @@ using ReCenterHub.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
+builder.Services.AddScoped<Notifier>();
+builder.Services.AddScoped<ConcreteObserver>();
 
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddHttpClient<ApiAuthService>(client =>
+{
+    client.BaseAddress = new Uri("https://localhost:7182/");
+});
+
+builder.Services.AddHttpClient<IndividualBookingService>(client =>
+{
+    client.BaseAddress = new Uri("https://localhost:7182/");
+});
+
+builder.Services.AddHttpClient<WorkshopBookingService>(client =>
 {
     client.BaseAddress = new Uri("https://localhost:7182/");
 });

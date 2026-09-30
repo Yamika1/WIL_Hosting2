@@ -1,25 +1,31 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using ReCenterHub.Models;
 using ReCenterHub.Services;
 using System.Net.NetworkInformation;
-using Microsoft.AspNetCore.Authorization;
+using static ReCenterHub.Services.ConcreteObserver;
 
 namespace ReCenterHub.Controllers
 {
     [Authorize(Roles = "Client")]
     public class IndividualBookingController : Controller
     {
-        private readonly IndividualBookingService _ibs;  
+        private readonly IndividualBookingService _ibs;
+        private readonly Notifier _notifier;
+        public int newBookingCount = 0;
 
-        public IndividualBookingController(IndividualBookingService ibs)
+        public IndividualBookingController(IndividualBookingService ibs, Notifier notifier)
         {
             _ibs = ibs;
+            _notifier = notifier;
         }
 
         public async Task<IActionResult> Index(string? category, string? firstName, string? surname)
         {
             var getAllBookings = _ibs.GetAllIndividualBookingsAsync();
+
             var upcomingSessions = await _ibs.UpcomingSessions();
+
             if (!string.IsNullOrEmpty(firstName) || !string.IsNullOrEmpty(surname))
             {
                 var bookings = _ibs.SearchByFirstNameAndSurname(firstName, surname);
@@ -52,7 +58,16 @@ namespace ReCenterHub.Controllers
             {
                 try
                 {
+                    var admin = new Notification(newBookingCount);
+                    _notifier.Subscribe(admin);
+
                     await _ibs.CreateAsync(ib);
+
+                    newBookingCount++;
+                    _notifier.Notify(newBookingCount);
+                    string notificationMessage = " You now have " + newBookingCount + " new booking/s.";
+                    TempData["Notification"] = notificationMessage;
+
                     return RedirectToAction(nameof(Index));
                 }
                 catch (ArgumentException ex)
