@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Mvc;
 using ReCenterHub.Services;
 using ReCenterHub.ViewModels;
+using System.Security.Claims;
 
 namespace ReCenterHub.Controllers
 {
@@ -15,16 +18,18 @@ namespace ReCenterHub.Controllers
         }
 
         [HttpGet]
-        public IActionResult Login()
+        public IActionResult Login(string? returnUrl = null)
         {
+            ViewData["ReturnUrl"] = returnUrl;
 
             return View();
 
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(LoginViewModel model)
+        public async Task<IActionResult> Login(LoginViewModel model, string? returnUrl = null)
         {
+            ViewData["ReturnUrl"] = returnUrl;
 
             if (!ModelState.IsValid)
             {
@@ -44,11 +49,48 @@ namespace ReCenterHub.Controllers
 
             }
 
+            var user = await _apiAuthService.GetCurrentUserAsync(result.AccessToken);
+
+            if (user == null)
+            {
+                ModelState.AddModelError(string.Empty, "Could not load your account.");
+
+                return View(model);
+            }
+
+        
             HttpContext.Session.SetString("AccessToken", result.AccessToken);
+
+          
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.Id ?? string.Empty),
+                new Claim(ClaimTypes.Name, user.Email ?? model.Email),
+                new Claim(ClaimTypes.Email, user.Email ?? model.Email)
+            };
+
+            claims.AddRange(user.Roles.Select(role => new Claim(ClaimTypes.Role, role)));
+
+            var identity = new ClaimsIdentity(
+                claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+            await HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                new ClaimsPrincipal(identity),
+                new AuthenticationProperties
+                {
+                    IsPersistent = model.RememberMe
+                });
+
+            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+            {
+                return Redirect(returnUrl);
+            }
 
             return RedirectToAction("Index", "Home");
 
         }
+       
         [HttpGet]
         public IActionResult Register()
         {

@@ -29,13 +29,32 @@
             return await response.Content
                 .ReadFromJsonAsync<LoginResponse>();
         }
+        public async Task<CurrentUser?> GetCurrentUserAsync(string accessToken)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, "api/account/me");
+            request.Headers.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+
+            var response = await _httpClient.SendAsync(request);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return null;
+            }
+
+            return await response.Content.ReadFromJsonAsync<CurrentUser>(
+                new System.Text.Json.JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+        }
 
         public async Task<bool> RegisterAsync(
             string email,
             string password)
         {
             var response = await _httpClient.PostAsJsonAsync(
-                "register",
+               "api/account/register",
                 new
                 {
                     email,
@@ -44,6 +63,14 @@
 
             return response.IsSuccessStatusCode;
         }
+    }
+    public class CurrentUser
+    {
+        public string? Id { get; set; }
+
+        public string? Email { get; set; }
+
+        public List<string> Roles { get; set; } = new();
     }
 
     public class LoginResponse
