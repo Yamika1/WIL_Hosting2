@@ -4,6 +4,7 @@ using ReCenterHub.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
+
 builder.Services.AddScoped<Notifier>();
 builder.Services.AddScoped<ConcreteObserver>();
 
@@ -65,3 +66,4 @@ app.MapControllerRoute(
 
 
 app.Run();
+
