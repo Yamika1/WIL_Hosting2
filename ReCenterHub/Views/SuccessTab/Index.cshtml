@@ -1,0 +1,51 @@
+﻿@{
+    ViewData["Title"] = "Booking Request Received";
+}
+
+<section class="success-panel">
+    <div class="success-mark" aria-hidden="true">✓</div>
+
+    <span class="eyebrow">Thank you</span>
+    <h1>Your request has been received</h1>
+
+    <p class="text-muted">
+        Your booking request has been submitted. Please keep an eye
+        on your contact details for follow-up information about
+        scheduling.
+    </p>
+
+    <div class="success-details">
+        <div class="detail-box">
+            <h2>What happens next?</h2>
+            <p class="mb-0">
+                The team can review your request and follow up with
+                any additional information needed.
+            </p>
+        </div>
+
+        <div class="detail-box">
+            <h2>Need to get in touch?</h2>
+            <p class="mb-0">
+                <a href="mailto:info.recenterhub@gmail.com">
+                    info.recenterhub@gmail.com
+                </a>
+                <br />
+                <a href="tel:0613397981">061 339 7981</a>
+            </p>
+        </div>
+    </div>
+
+    <div class="form-actions" style="justify-content:center">
+        <a class="btn-brand"
+           asp-controller="Home"
+           asp-action="Index">
+            Return home
+        </a>
+
+        <a class="btn-outline-brand"
+           asp-controller="Notice"
+           asp-action="Index">
+            View notices
+        </a>
+    </div>
+</section>

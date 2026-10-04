@@ -1,8 +1,67 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Home";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<section class="hero">
+    <div class="hero-content">
+        <span class="hero-kicker">A safe space to grow</span>
+        <h1>RE-CENTER</h1>
+        <div class="hero-script">Hub</div>
+        <p>
+            A supportive space dedicated to rebuilding minds,
+            re-centering lives, and empowering growth.
+        </p>
+
+        <div class="hero-actions">
+            <a asp-controller="Services" asp-action="Index"
+               class="btn-brand">Explore Our Services</a>
+
+            <a asp-controller="AboutCompany" asp-action="Index"
+               class="btn-outline-brand">Discover Our Purpose</a>
+        </div>
+    </div>
+</section>
+
+<section class="section-heading">
+    <div>
+        <span class="eyebrow">How we support you</span>
+        <h2>Space to learn, heal and grow</h2>
+    </div>
+</section>
+
+<div class="feature-grid">
+    <article class="feature-card">
+        <div class="feature-icon" aria-hidden="true">♡</div>
+        <h2>Counselling &amp; Wellness</h2>
+        <p>
+            Support that encourages emotional wellbeing,
+            healthy coping strategies and personal growth.
+        </p>
+    </article>
+
+    <article class="feature-card">
+        <div class="feature-icon" aria-hidden="true">✦</div>
+        <h2>Life Skills &amp; Education</h2>
+        <p>
+            Practical learning opportunities that help young
+            people build confidence and make informed decisions.
+        </p>
+    </article>
+
+    <article class="feature-card">
+        <div class="feature-icon" aria-hidden="true">◎</div>
+        <h2>Youth Development</h2>
+        <p>
+            Mentorship and development opportunities that help
+            young people recognise their strengths and potential.
+        </p>
+    </article>
 </div>
+
+<section class="mission-band">
+    <h2>A Hub for Growth. A Path to Purpose.</h2>
+    <p class="mb-0">
+        Every person deserves support, guidance and the opportunity
+        to discover their purpose.
+    </p>
+</section>

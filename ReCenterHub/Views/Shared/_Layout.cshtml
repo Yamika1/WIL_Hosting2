@@ -3,104 +3,156 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - ReCenterHub</title>
-    <script type="importmap"></script>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/ReCenterHub.styles.css" asp-append-version="true" />
+    <meta name="theme-color" content="#3f4632" />
+
+    <title>@ViewData["Title"] - Re-Center Hub</title>
+
+    <link rel="stylesheet"
+          href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <link rel="stylesheet"
+          href="~/css/site.css"
+          asp-append-version="true" />
+
+    <link rel="stylesheet"
+          href="~/ReCenterHub.styles.css"
+          asp-append-version="true" />
 </head>
+
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+    <a class="skip-link" href="#main-content">
+        Skip to content
+    </a>
 
-            <div class="container-fluid">
+    <header class="site-header">
+        <div class="brand-row">
+            <a class="brand"
+               asp-controller="Home"
+               asp-action="Index"
+               aria-label="Re-Center Hub home">
 
-                <a class="navbar-brand"
-                   asp-area=""
-                   asp-controller="Home"
-                   asp-action="Index">
-                    ReCenterHub
+                <span class="brand-mark" aria-hidden="true">R</span>
+
+                <span>
+                    <strong>RE-CENTER</strong>
+                    <small>Hub for Growth · Path to Purpose</small>
+                </span>
+            </a>
+
+            <div class="account-links">
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <span class="welcome-user">
+                        Hello, @(User.Identity.Name ?? "there")
+                    </span>
+
+                    <form asp-controller="Account"
+                          asp-action="Logout"
+                          method="post"
+                          class="inline-form">
+
+                        @Html.AntiForgeryToken()
+
+                        <button type="submit"
+                                class="nav-pill nav-pill-outline">
+                            Sign out
+                        </button>
+                    </form>
+                }
+                else
+                {
+                    <a class="nav-pill nav-pill-outline"
+                       asp-controller="Account"
+                       asp-action="Login">
+                        Sign in
+                    </a>
+
+                    <a class="nav-pill"
+                       asp-controller="Account"
+                       asp-action="Register">
+                        Create account
+                    </a>
+                }
+            </div>
+        </div>
+
+        <nav class="main-nav" aria-label="Main navigation">
+            <a asp-controller="Home" asp-action="Index">Home</a>
+            <a asp-controller="AboutMe" asp-action="Index">About Me</a>
+            <a asp-controller="AboutCompany" asp-action="Index">
+                About Re-Center
+            </a>
+            <a asp-controller="Services" asp-action="Index">Services</a>
+            <a asp-controller="FAQ" asp-action="Index">FAQs</a>
+            <a asp-controller="Notice" asp-action="Index">Notices</a>
+
+            <a asp-controller="IndividualBooking" asp-action="Create">
+                Individual session
+            </a>
+
+            <a asp-controller="WorkshopBooking" asp-action="Create">
+                Workshop
+            </a>
+
+            @if (User.IsInRole("Admin"))
+            {
+                <a asp-controller="ClientDetails" asp-action="Index">
+                    Client details
                 </a>
 
-                <button class="navbar-toggler"
-                        type="button"
-                        data-bs-toggle="collapse"
-                        data-bs-target=".navbar-collapse"
-                        aria-controls="navbarSupportedContent"
-                        aria-expanded="false"
-                        aria-label="Toggle navigation">
+                <a asp-controller="IndividualBooking" asp-action="Index">
+                    Bookings
+                </a>
+            }
 
-                    <span class="navbar-toggler-icon"></span>
+            @if (User.IsInRole("Client"))
+            {
+                <a asp-controller="IndividualBooking" asp-action="Index">
+                    My sessions
+                </a>
 
-                </button>
-
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-
-                    <ul class="navbar-nav flex-grow-1">
-
-                        <li class="nav-item">
-                            <a class="nav-link text-dark"
-                               asp-area=""
-                               asp-controller="Home"
-                               asp-action="Index">
-                                Home
-                            </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link text-dark"
-                               asp-area=""
-                               asp-controller="Home"
-                               asp-action="Privacy">
-                                Privacy
-                            </a>
-                        </li>
-
-                        @if (User.IsInRole("Admin"))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link"
-                                   asp-controller="Home"
-                                   asp-action="Admin">
-                                    Admin
-                                </a>
-                            </li>
-                        }
-
-                        @if (User.IsInRole("Client"))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link"
-                                   asp-controller="Home"
-                                   asp-action="Client">
-                                    Client
-                                </a>
-                            </li>
-                        }
-
-                        <partial name="_LoginPartial" />
-
-                    </ul>
-
-                </div>
-            </div>
+                <a asp-controller="WorkshopBooking" asp-action="Index">
+                    My workshops
+                </a>
+            }
         </nav>
     </header>
 
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
+    <main id="main-content" class="page-content" role="main">
+        @if (TempData["Error"] is string error &&
+             !string.IsNullOrWhiteSpace(error))
+        {
+            <div class="notice-banner notice-error" role="alert">
+                @error
+            </div>
+        }
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - ReCenterHub - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        @if (TempData["Notification"] is string notification &&
+             !string.IsNullOrWhiteSpace(notification))
+        {
+            <div class="notice-banner" role="status">
+                @notification
+            </div>
+        }
+
+        @RenderBody()
+    </main>
+
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <span>Re-Center Hub</span>
+            <span>A Hub for Growth. A Path to Purpose.</span>
+
+            <a asp-controller="Notice" asp-action="Index">
+                Notices
+            </a>
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
