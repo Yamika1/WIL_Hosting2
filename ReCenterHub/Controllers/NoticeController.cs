@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ReCenterHub.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Client,Admin")]
     public class NoticeController : Controller
     {
         public IActionResult Index()

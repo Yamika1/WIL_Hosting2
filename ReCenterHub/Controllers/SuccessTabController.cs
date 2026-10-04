@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ReCenterHub.Controllers
 {
-    [Authorize(Roles = "Client")]
+    [Authorize(Roles = "Client,Admin")]
     public class SuccessTabController : Controller
     {
         public IActionResult Index()
