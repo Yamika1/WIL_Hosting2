@@ -1,0 +1,70 @@
+﻿@{
+    ViewData["Title"] = "Frequently Asked Questions";
+
+    var faqs = new[]
+    {
+        (
+            "What is Child and Youth Care?",
+            "It supports the social, emotional, behavioural and developmental needs of children and young people. It involves working with young people in the context of their families, schools, communities and everyday lives to help them navigate challenges and reach their potential."
+        ),
+        (
+            "What is LifeSpace Counselling?",
+            "LifeSpace counselling takes place within the young person's everyday environment and lived experience. It considers relationships, family, school, community, emotions and circumstances."
+        ),
+        (
+            "What is Resilience Building?",
+            "Resilience building helps children, young people and families develop the skills, strengths and support systems they need to cope with challenges, recover from difficulties and adapt to change."
+        ),
+        (
+            "What is Psychosocial Support?",
+            "Psychosocial support addresses emotional and social wellbeing. It may include managing stress, coping with difficult experiences, strengthening relationships, developing coping skills and connecting with appropriate support systems."
+        ),
+        (
+            "What is Youth Development?",
+            "Youth development helps young people develop the knowledge, skills, confidence and opportunities they need to become healthy, responsible and empowered individuals. It can include life skills, leadership, career guidance, decision-making and communication."
+        ),
+        (
+            "What are Youth Mentorship Programmes?",
+            "Mentorship programmes connect young people with a supportive adult or mentor who can provide guidance, encouragement, accountability and positive role modelling."
+        ),
+        (
+            "Who can benefit from Re-Center Hub's services?",
+            "Services can benefit children, adolescents, young adults, parents, caregivers, schools and community organisations seeking support with personal development, wellbeing, relationships, life skills and youth development."
+        ),
+        (
+            "Do you only provide counselling?",
+            "No. Re-Center Hub takes a holistic approach. Services may include LifeSpace counselling and wellness support, life skills and education, youth development, mentorship and resilience-building initiatives."
+        ),
+        (
+            "When should someone seek support?",
+            "You do not have to wait until a problem becomes overwhelming. Support can be useful when someone experiences stress, relationship difficulties, major life changes, low confidence, academic challenges or uncertainty about how to move forward."
+        ),
+        (
+            "Is counselling only for people experiencing serious problems?",
+            "No. Counselling can also support personal growth, self-awareness, decision-making, emotional wellbeing and everyday life challenges."
+        ),
+        (
+            "How does Re-Center Hub support young people?",
+            "We focus on understanding young people's individual circumstances and helping them develop strengths, coping skills, confidence and supportive relationships."
+        )
+    };
+}
+
+<div class="page-heading">
+    <span class="eyebrow">A little more clarity</span>
+    <h1>Frequently Asked Questions</h1>
+    <p>
+        Learn more about child and youth care and the support
+        offered at Re-Center Hub.
+    </p>
+</div>
+
+<div class="faq-grid">
+    @foreach (var item in faqs)
+    {
+        <article class="faq-card">
+            <h2>@item.Item1</h2>
+            <p>@item.Item2</p>
+        </article>
+    }
+</div>

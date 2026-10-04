@@ -1,17 +1,35 @@
 ﻿<!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta name="viewport" content="width=device-width" />
-    <title>@ViewData["Title"]</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/account.css" />
+    <title>@ViewData["Title"] - Re-Center Hub</title>
+
+    <link rel="stylesheet"
+          href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <link rel="stylesheet"
+          href="~/css/site.css"
+          asp-append-version="true" />
+
+    <link rel="stylesheet"
+          href="~/css/account.css"
+          asp-append-version="true" />
 </head>
 
 <body>
-    <div>
-        @RenderBody()
-    </div>
+    <main class="account-shell">
+        <div style="width:100%">
+            <a class="account-brand text-decoration-none"
+               asp-controller="Home"
+               asp-action="Index">
+                <span>R</span> RE-CENTER HUB
+            </a>
+
+            @RenderBody()
+        </div>
+    </main>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
