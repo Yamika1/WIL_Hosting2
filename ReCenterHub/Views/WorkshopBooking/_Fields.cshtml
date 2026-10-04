@@ -1,0 +1,52 @@
+﻿@model ReCenterHub.Models.WorkshopBooking
+
+<div class="form-grid">
+    <div class="form-field">
+        <label asp-for="InstitutionName" class="form-label"></label>
+        <input asp-for="InstitutionName" class="form-control" autocomplete="organization" />
+        <span asp-validation-for="InstitutionName" class="field-validation-error"></span>
+    </div>
+
+    <div class="form-field">
+        <label asp-for="TargetAudience" class="form-label"></label>
+        <input asp-for="TargetAudience" class="form-control"
+               placeholder="e.g. Grade 10 learners, parents, staff" />
+        <span asp-validation-for="TargetAudience" class="field-validation-error"></span>
+    </div>
+
+    <div class="form-field">
+        <label asp-for="Topic" class="form-label"></label>
+        <input asp-for="Topic" class="form-control"
+               placeholder="e.g. Resilience, leadership, study skills" />
+        <span asp-validation-for="Topic" class="field-validation-error"></span>
+    </div>
+
+    <div class="form-field">
+        <label asp-for="PhoneNumber" class="form-label"></label>
+        <input asp-for="PhoneNumber" class="form-control" type="tel" autocomplete="tel" />
+        <span asp-validation-for="PhoneNumber" class="field-validation-error"></span>
+    </div>
+
+    <div class="form-field">
+        <label asp-for="EmailAddress" class="form-label"></label>
+        <input asp-for="EmailAddress" class="form-control" type="email" autocomplete="email" />
+        <span asp-validation-for="EmailAddress" class="field-validation-error"></span>
+    </div>
+
+    <div class="form-field">
+        <label asp-for="Date_and_Time" class="form-label"></label>
+        <input asp-for="Date_and_Time"
+               class="form-control"
+               type="datetime-local"
+               asp-format="{0:yyyy-MM-ddTHH:mm}"
+               min="@(Model.WorkshopBookingID == 0 ? DateTime.Now.ToString("yyyy-MM-ddTHH:mm") : null)" />
+        <span asp-validation-for="Date_and_Time" class="field-validation-error"></span>
+    </div>
+
+    <div class="form-field full-width">
+        <label asp-for="OptionalNotes" class="form-label"></label>
+        <textarea asp-for="OptionalNotes" class="form-control" rows="4"
+                  placeholder="Add any additional information (optional)"></textarea>
+        <span asp-validation-for="OptionalNotes" class="field-validation-error"></span>
+    </div>
+</div>
