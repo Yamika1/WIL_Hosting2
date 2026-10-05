@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
 using ReCenterHub.Services;
 
 var builder = WebApplication.CreateBuilder(args);
