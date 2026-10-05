@@ -7,22 +7,14 @@
 
     <title>@ViewData["Title"] - Re-Center Hub</title>
 
-    <link rel="stylesheet"
-          href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-
-    <link rel="stylesheet"
-          href="~/css/site.css"
-          asp-append-version="true" />
-
-    <link rel="stylesheet"
-          href="~/ReCenterHub.styles.css"
-          asp-append-version="true" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/bookings.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/ReCenterHub.styles.css" asp-append-version="true" />
 </head>
 
 <body>
-    <a class="skip-link" href="#main-content">
-        Skip to content
-    </a>
+    <a class="skip-link" href="#main-content">Skip to content</a>
 
     <header class="site-header">
         <div class="brand-row">
@@ -51,10 +43,7 @@
                           method="post"
                           class="inline-form">
 
-                        @Html.AntiForgeryToken()
-
-                        <button type="submit"
-                                class="nav-pill nav-pill-outline">
+                        <button type="submit" class="nav-pill nav-pill-outline">
                             Sign out
                         </button>
                     </form>
@@ -79,60 +68,41 @@
         <nav class="main-nav" aria-label="Main navigation">
             <a asp-controller="Home" asp-action="Index">Home</a>
             <a asp-controller="AboutMe" asp-action="Index">About Me</a>
-            <a asp-controller="AboutCompany" asp-action="Index">
-                About Re-Center
-            </a>
+            <a asp-controller="AboutCompany" asp-action="Index">About Re-Center</a>
             <a asp-controller="Services" asp-action="Index">Services</a>
             <a asp-controller="FAQ" asp-action="Index">FAQs</a>
             <a asp-controller="Notice" asp-action="Index">Notices</a>
 
-            <a asp-controller="IndividualBooking" asp-action="Create">
-                Individual session
-            </a>
-
-            <a asp-controller="WorkshopBooking" asp-action="Create">
-                Workshop
-            </a>
-
-            @if (User.IsInRole("Admin"))
+            @if (!User.IsInRole("Admin"))
             {
-                <a asp-controller="ClientDetails" asp-action="Index">
-                    Client details
-                </a>
-
-                <a asp-controller="IndividualBooking" asp-action="Index">
-                    Bookings
-                </a>
+                @* Visitors and clients can book; visitors are sent to sign in first. *@
+                <a asp-controller="IndividualBooking" asp-action="Create">Book a session</a>
+                <a asp-controller="WorkshopBooking" asp-action="Create">Book a workshop</a>
             }
 
             @if (User.IsInRole("Client"))
             {
-                <a asp-controller="IndividualBooking" asp-action="Index">
-                    My sessions
-                </a>
+                <a asp-controller="IndividualBooking" asp-action="Index">My sessions</a>
+                <a asp-controller="WorkshopBooking" asp-action="Index">My workshops</a>
+            }
 
-                <a asp-controller="WorkshopBooking" asp-action="Index">
-                    My workshops
-                </a>
+            @if (User.IsInRole("Admin"))
+            {
+                <a asp-controller="Admin" asp-action="Index">Admin dashboard</a>
+                <a asp-controller="ClientDetails" asp-action="Index">Client details</a>
             }
         </nav>
     </header>
 
-    <main id="main-content" class="page-content" role="main">
-        @if (TempData["Error"] is string error &&
-             !string.IsNullOrWhiteSpace(error))
+    <main id="main-content" class="page-content">
+        @if (TempData["Error"] is string error && !string.IsNullOrWhiteSpace(error))
         {
-            <div class="notice-banner notice-error" role="alert">
-                @error
-            </div>
+            <div class="notice-banner notice-error" role="alert">@error</div>
         }
 
-        @if (TempData["Notification"] is string notification &&
-             !string.IsNullOrWhiteSpace(notification))
+        @if (TempData["Notification"] is string notification && !string.IsNullOrWhiteSpace(notification))
         {
-            <div class="notice-banner" role="status">
-                @notification
-            </div>
+            <div class="notice-banner" role="status">@notification</div>
         }
 
         @RenderBody()
@@ -142,10 +112,7 @@
         <div class="footer-inner">
             <span>Re-Center Hub</span>
             <span>A Hub for Growth. A Path to Purpose.</span>
-
-            <a asp-controller="Notice" asp-action="Index">
-                Notices
-            </a>
+            <a asp-controller="Notice" asp-action="Index">Notices</a>
         </div>
     </footer>
 

@@ -2,84 +2,28 @@
 
 @{
     ViewData["Title"] = "Update Individual Booking";
+    var status = string.IsNullOrWhiteSpace(Model.Status) ? "Pending" : Model.Status;
 }
 
-<div class="container py-4">
-    <div class="mb-4">
+<div class="form-card">
+    <div class="form-intro">
         <h1>Update Individual Booking</h1>
-        <p class="text-muted">Edit the details of your booking.</p>
+        <p class="text-muted">
+            Edit the details of your booking.
+            Current status: <span class="status-chip status-@status.ToLower()">@status</span>
+        </p>
     </div>
 
-    @if (TempData["Error"] != null)
-    {
-        <div class="alert alert-danger">@TempData["Error"]</div>
-    }
+    <form asp-action="Update" asp-route-id="@Model.IndividualBookingID" method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-    <div class="card shadow-sm">
-        <div class="card-body p-4">
-            <form asp-action="Update" asp-route-id="@Model.IndividualBookingID" method="post">
-                @Html.AntiForgeryToken()
+        <partial name="_Fields" model="Model" />
 
-                <input asp-for="IndividualBookingID" type="hidden" />
-                <input asp-for="UserId" type="hidden" />
-
-                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
-
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <label asp-for="FirstName" class="form-label"></label>
-                        <input asp-for="FirstName" class="form-control" required />
-                        <span asp-validation-for="FirstName" class="text-danger"></span>
-                    </div>
-
-                    <div class="col-md-6">
-                        <label asp-for="Surname" class="form-label"></label>
-                        <input asp-for="Surname" class="form-control" required />
-                        <span asp-validation-for="Surname" class="text-danger"></span>
-                    </div>
-
-                    <div class="col-md-6">
-                        <label asp-for="Category" class="form-label"></label>
-                        <input asp-for="Category" class="form-control" required />
-                        <span asp-validation-for="Category" class="text-danger"></span>
-                    </div>
-
-                    <div class="col-md-6">
-                        <label asp-for="PhoneNumber" class="form-label"></label>
-                        <input asp-for="PhoneNumber" class="form-control" type="tel" required />
-                        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
-                    </div>
-
-                    <div class="col-md-6">
-                        <label asp-for="EmailAddress" class="form-label"></label>
-                        <input asp-for="EmailAddress" class="form-control" type="email" required />
-                        <span asp-validation-for="EmailAddress" class="text-danger"></span>
-                    </div>
-
-                    <div class="col-md-6">
-                        <label asp-for="Date_and_Time" class="form-label"></label>
-                        <input asp-for="Date_and_Time"
-                               class="form-control"
-                               type="datetime-local"
-                               asp-format="{0:yyyy-MM-ddTHH:mm}"
-                               required />
-                        <span asp-validation-for="Date_and_Time" class="text-danger"></span>
-                    </div>
-
-                    <div class="col-12">
-                        <label asp-for="OptionalNotes" class="form-label"></label>
-                        <textarea asp-for="OptionalNotes" class="form-control" rows="4"></textarea>
-                        <span asp-validation-for="OptionalNotes" class="text-danger"></span>
-                    </div>
-                </div>
-
-                <div class="mt-4 d-flex gap-2">
-                    <button type="submit" class="btn btn-primary">Save Changes</button>
-                    <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
-                </div>
-            </form>
+        <div class="form-actions">
+            <button type="submit" class="btn-brand">Save changes</button>
+            <a asp-action="Index" class="btn-outline-brand">Cancel</a>
         </div>
-    </div>
+    </form>
 </div>
 
 @section Scripts {
