@@ -80,12 +80,13 @@ namespace ReCenterHub.Services
             return await response.Content.ReadFromJsonAsync<WorkshopBooking>();
 
         }
+        
 
-        public async Task<bool> Delete(WorkshopBooking request)
+        public async Task<bool> DeleteAsync(int? id)
         {
             AddToken();
 
-            var response = await _httpClient.DeleteAsync($"api/WorkshopBooking/{request.WorkshopBookingID}");
+            var response = await _httpClient.DeleteAsync($"api/WorkshopBooking/{id}");
             ThrowIfUnauthorized(response);
 
             return response.IsSuccessStatusCode;
@@ -108,7 +109,7 @@ namespace ReCenterHub.Services
 
         public async Task<List<IndividualBooking>?> SearchByInstitutionName(string institutionName)
         {
-            var response = await _httpClient.GetAsync($"api/IndividualBooking/SearchByInstitutionName?institutionName={institutionName}");
+            var response = await _httpClient.GetAsync($"api/IndividualBooking/search-by-institutionname?institutionName={institutionName}");
             if (response.IsSuccessStatusCode)
             {
                 return await response.Content.ReadFromJsonAsync<List<IndividualBooking>>();
@@ -118,7 +119,7 @@ namespace ReCenterHub.Services
 
         public async Task<List<IndividualBooking>?> FilterByTopic(string topic)
         {
-            var response = await _httpClient.GetAsync($"api/IndividualBooking/FilterByTopic?topic={topic}");
+            var response = await _httpClient.GetAsync($"api/IndividualBooking/filter-by-topic?topic={topic}");
             if (response.IsSuccessStatusCode)
             {
                 return await response.Content.ReadFromJsonAsync<List<IndividualBooking>>();
@@ -133,5 +134,12 @@ namespace ReCenterHub.Services
                 (b.Status == "Scheduled" || b.Status == "Rescheduled")
             ).ToList();
         }
+
+        internal async Task<List<WorkshopBooking>?> GetClientWorkshopsAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        
     }
 }

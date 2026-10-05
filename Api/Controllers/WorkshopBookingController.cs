@@ -80,7 +80,9 @@ namespace Api.Controllers
             _authDbContext.SaveChanges();
             return Ok(WorkshopBooking);
         }
-        [HttpPut]
+
+        [HttpPost]
+        [ActionName("Update")]
         [Route("{id:int}")]
         [Authorize(Roles = "Client,Admin")]
         public IActionResult UpdateWorkshop(int id, WorkshopBooking WorkshopBookingentity) {
@@ -105,11 +107,13 @@ namespace Api.Controllers
             _authDbContext.SaveChanges();
             return Ok(workshopBooking); 
         }
-        [HttpDelete]
-        [Authorize(Roles = "Client,Admin")]
-        [Route("{id:int}")] 
-        public IActionResult DeleteWorkshopBooking(int id) {
-            
+
+        [HttpPost]
+        [ActionName("Delete")]
+        [Authorize(Roles = "Admin")]
+        [Route("{id:int}")]
+        public IActionResult DeleteWorkshopBooking(int id)
+        {
             var workshopBooking = _authDbContext.WorkshopBooking.Find(id);
             
             if (workshopBooking is null)
@@ -127,22 +131,7 @@ namespace Api.Controllers
             return Ok();
         }
 
-        [HttpGet("SearchByInstitutionName")]
-        public IEnumerable<WorkshopBooking> SearchByInstitutionName(string institutionName)
-        {
-            var statusQuery = from booking in _authDbContext.WorkshopBooking select booking;
-            var searchResults = statusQuery.Include(c => c.WorkshopBookingID).Where(c => c.InstitutionName == institutionName);
-            return searchResults.ToList();
-        }
-
-        [HttpGet("FilterByTopic")]
-        public IEnumerable<WorkshopBooking> FilterByTopic(string topic)
-        {
-            var statusQuery = from booking in _authDbContext.WorkshopBooking select booking;
-            var searchResults = statusQuery.Include(c => c.WorkshopBookingID).Where(c => c.Topic == topic);
-            return searchResults.ToList();
-
-        }
+        
         
 
 

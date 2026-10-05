@@ -133,7 +133,7 @@ namespace ReCenterHub.Controllers
         }
 
 
-        [HttpDelete]
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int? id)
@@ -143,7 +143,7 @@ namespace ReCenterHub.Controllers
                 return NotFound();
             }
 
-            var deleted = await _wbs.DeleteAsync(id.Value);
+            var deleted = await _wbs.DeleteAsync(id);
 
             TempData[deleted ? "Notification" : "Error"] = deleted
                 ? "The workshop booking was deleted."

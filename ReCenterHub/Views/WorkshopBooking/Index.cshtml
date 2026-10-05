@@ -60,7 +60,7 @@
                             <td><span class="status-chip status-@status.ToLower()">@status</span></td>
                             <td>
                                 <div class="row-actions">
-                                    @if (!BookingStatuses.IsClosed(booking.Status))
+                                    @if (!BookingStatuses.isClosed(booking.Status))
                                     {
                                         <a asp-action="Update"
                                            asp-route-id="@booking.WorkshopBookingID"

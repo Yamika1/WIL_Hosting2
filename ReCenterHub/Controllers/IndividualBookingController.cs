@@ -145,7 +145,7 @@ namespace ReCenterHub.Controllers
         
 
         
-        [HttpDelete]
+        [HttpPost]
         public async Task<IActionResult> Delete(int? id)
         {
             var booking = await _ibs.GetIndividualBookingByIdAsync(id.Value);
