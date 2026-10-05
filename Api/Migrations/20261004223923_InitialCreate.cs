@@ -63,7 +63,8 @@ namespace Api.Migrations
                     PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     EmailAddress = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Date_and_Time = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    OptionalNotes = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    OptionalNotes = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -77,13 +78,14 @@ namespace Api.Migrations
                     WorkshopBookingID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Surname = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Age = table.Column<int>(type: "int", nullable: false),
+                    InstitutionName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    TargetAudience = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     EmailAddress = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Date_and_Time = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    OptionalNotes = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    OptionalNotes = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Topic = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {

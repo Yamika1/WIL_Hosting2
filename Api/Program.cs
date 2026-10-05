@@ -57,6 +57,15 @@ using (var scope = app.Services.CreateScope())
             await roleManager.CreateAsync(new IdentityRole(role));
         }
     }
-}
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+    var adminEmail = builder.Configuration["Seed:AdminEmail"];
+    var adminPassword = builder.Configuration["Seed:AdminPassword"];
+    if (!string.IsNullOrEmpty(adminEmail) && await userManager.FindByEmailAsync(adminEmail) is null)
+    {
+        var admin = new IdentityUser { UserName = adminEmail, Email = adminEmail, EmailConfirmed = true };
+        if ((await userManager.CreateAsync(admin, adminPassword!)).Succeeded)
+            await userManager.AddToRoleAsync(admin, "Admin");
+    }
+    }
 
-app.Run();
+    app.Run();

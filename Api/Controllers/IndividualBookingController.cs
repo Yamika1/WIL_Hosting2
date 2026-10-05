@@ -20,6 +20,10 @@ namespace Api.Controllers
         {
             _authDbContext = authDbContext;
         }
+        private string? CurrentUserId => User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        private bool CanAccess(IndividualBooking booking) =>
+            User.IsInRole("Admin") || booking.UserId == CurrentUserId;
 
 
 
@@ -37,8 +41,23 @@ namespace Api.Controllers
 
         }
 
+        [HttpGet("{id:int}")]
+        [Authorize(Roles = "Client,Admin")]
+        public IActionResult GetBookingById(int id)
+        {
+            var booking = _authDbContext.IndividualBooking.Find(id);
+
+            if (booking is null)
+                return NotFound();
+
+            if (!CanAccess(booking))
+                return StatusCode(StatusCodes.Status403Forbidden);
+
+            return Ok(booking);
+        }
+
         [HttpPost]
-        [Authorize(Roles = "Client")]
+        [Authorize(Roles = "Client,Admin")]
         public IActionResult AddIndividualBookings(AddIndividualBookingDTO individualBookingentity)
         {
             
@@ -53,7 +72,8 @@ namespace Api.Controllers
                     PhoneNumber = individualBookingentity.PhoneNumber,
                     EmailAddress = individualBookingentity.EmailAddress,
                     Date_and_Time = individualBookingentity.Date_and_Time,
-                    OptionalNotes = individualBookingentity.OptionalNotes
+                    OptionalNotes = individualBookingentity.OptionalNotes,
+                    Status = "Scheduled"
                 };
 
                 _authDbContext.IndividualBooking.Add(individualBooking);
@@ -63,8 +83,8 @@ namespace Api.Controllers
 
             [HttpPut]
             [Route("{id:int}")]
-            [Authorize(Roles = "Client")]
-            public IActionResult UpdateBooking(int id, UpdateIndividualBookingDTO individualBookingentity)
+        [Authorize(Roles = "Client,Admin")]
+        public IActionResult UpdateBooking(int id, UpdateIndividualBookingDTO individualBookingentity)
             {
              
                 var individualBooking = _authDbContext.IndividualBooking.Find(id);
@@ -72,7 +92,11 @@ namespace Api.Controllers
                 if (individualBooking is null)
                     return NotFound();
 
-                individualBooking.FirstName = individualBookingentity.FirstName;
+            if (!CanAccess(individualBooking))
+                return StatusCode(StatusCodes.Status403Forbidden);
+
+
+            individualBooking.FirstName = individualBookingentity.FirstName;
                 individualBooking.Surname = individualBookingentity.Surname;
                 individualBooking.EmailAddress = individualBookingentity.EmailAddress;
                 individualBooking.Category = individualBookingentity.Category;
@@ -80,13 +104,17 @@ namespace Api.Controllers
                 individualBooking.Date_and_Time = individualBookingentity.Date_and_Time;
                 individualBooking.OptionalNotes = individualBookingentity.OptionalNotes;
 
-                _authDbContext.SaveChanges();
+
+            if (User.IsInRole("Admin") && !string.IsNullOrWhiteSpace(individualBookingentity.Status))
+                individualBookingentity.Status = individualBookingentity.Status;
+
+            _authDbContext.SaveChanges();
                 return Ok(individualBooking);
             }
 
             [HttpDelete]
             [Route("{id:int}")]
-            [Authorize(Roles = "Client")]
+            [Authorize(Roles = "Client,Admin")]
             public IActionResult DeleteBooking(int id)
             {
                 var indivdualBooking = _authDbContext.IndividualBooking.Find(id);
@@ -94,7 +122,10 @@ namespace Api.Controllers
                 if (indivdualBooking is null)
                     return NotFound();
 
-                _authDbContext.IndividualBooking.Remove(indivdualBooking);
+            if (!CanAccess(indivdualBooking))
+                return StatusCode(StatusCodes.Status403Forbidden);
+
+            _authDbContext.IndividualBooking.Remove(indivdualBooking);
                 _authDbContext.SaveChanges();
                 return Ok();
             }
