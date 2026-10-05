@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ReCenterHub.Controllers
 {
-    [AllowAnonymous]
+    [Authorize(Roles = "Client,Admin")]
     public class AboutMeController : Controller
     {
         public IActionResult Index()

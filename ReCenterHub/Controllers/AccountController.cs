@@ -58,10 +58,10 @@ namespace ReCenterHub.Controllers
                 return View(model);
             }
 
-        
+            // Keep the API token for calls to the API.
             HttpContext.Session.SetString("AccessToken", result.AccessToken);
 
-          
+            // Sign the user in once so every [Authorize] page recognises them.
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id ?? string.Empty),
@@ -90,7 +90,6 @@ namespace ReCenterHub.Controllers
             return RedirectToAction("Index", "Home");
 
         }
-       
         [HttpGet]
         public IActionResult Register()
         {
@@ -128,9 +127,10 @@ namespace ReCenterHub.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
-            HttpContext.Session.Clear();
+            HttpContext.Session.Remove("AccessToken");
+
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
             return RedirectToAction("Index", "Home");
         }

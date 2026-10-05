@@ -81,8 +81,7 @@ namespace Api.Controllers
             return Ok(WorkshopBooking);
         }
 
-        [HttpPost]
-        [ActionName("Update")]
+        [HttpPut]
         [Route("{id:int}")]
         [Authorize(Roles = "Client,Admin")]
         public IActionResult UpdateWorkshop(int id, WorkshopBooking WorkshopBookingentity) {
@@ -108,8 +107,7 @@ namespace Api.Controllers
             return Ok(workshopBooking); 
         }
 
-        [HttpPost]
-        [ActionName("Delete")]
+        [HttpDelete]
         [Authorize(Roles = "Admin")]
         [Route("{id:int}")]
         public IActionResult DeleteWorkshopBooking(int id)

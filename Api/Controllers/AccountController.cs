@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -19,7 +18,7 @@ namespace Api.Controllers
 
         public record ClientRegisterRequest(string Email, string Password);
 
-
+       
         [HttpPost("register")]
         public async Task<IActionResult> Register(ClientRegisterRequest request)
         {

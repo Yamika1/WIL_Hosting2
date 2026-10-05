@@ -29,6 +29,7 @@
             return await response.Content
                 .ReadFromJsonAsync<LoginResponse>();
         }
+
         public async Task<CurrentUser?> GetCurrentUserAsync(string accessToken)
         {
             var request = new HttpRequestMessage(HttpMethod.Get, "api/account/me");
@@ -54,7 +55,7 @@
             string password)
         {
             var response = await _httpClient.PostAsJsonAsync(
-               "api/account/register",
+                "api/account/register",
                 new
                 {
                     email,
@@ -64,6 +65,7 @@
             return response.IsSuccessStatusCode;
         }
     }
+
     public class CurrentUser
     {
         public string? Id { get; set; }

@@ -81,8 +81,7 @@ namespace Api.Controllers
                 return Ok(individualBookingentity);
             }
 
-            [HttpPost]
-           [ActionName("Update")]
+            [HttpPut]
             [Route("{id:int}")]
         [Authorize(Roles = "Client,Admin")]
         public IActionResult UpdateBooking(int id, UpdateIndividualBookingDTO individualBookingentity)
@@ -113,8 +112,7 @@ namespace Api.Controllers
                 return Ok(individualBooking);
             }
 
-            [HttpPost]
-        [ActionName("Delete")]
+            [HttpDelete]
         [Route("{id:int}")]
             [Authorize(Roles = "Client,Admin")]
             public IActionResult DeleteBooking(int id)
