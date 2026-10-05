@@ -126,10 +126,11 @@ namespace ReCenterHub.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Logout()
+        public async Task<IActionResult> Logout()
         {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
-            HttpContext.Session.Remove("AccessToken");
+            HttpContext.Session.Clear();
 
             return RedirectToAction("Index", "Home");
         }

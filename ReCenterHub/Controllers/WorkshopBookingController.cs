@@ -21,26 +21,38 @@ namespace ReCenterHub.Controllers
             _wbs = wbs;
             _notifier = notifier;
         }
+        private static bool Matches(string? value, string search) =>
+          value?.Contains(search, StringComparison.OrdinalIgnoreCase) == true;
 
+       
         public async Task<IActionResult> Index(string? topic, string? instituitionName)
         {
-            var allBookings = _wbs.GetAllWorkshopBookingsAsync();
+            var isAdmin = User.IsInRole("Admin");
 
-            var upcomingSessions = await _wbs.UpcomingSessions();
+            var loaded = isAdmin
+                ? await _wbs.GetAllWorkshopBookingsAsync()
+                : await _wbs.GetClientWorkshopsAsync();
 
-            if (!string.IsNullOrEmpty(instituitionName))
+            if (loaded == null)
             {
-                var bookings = _wbs.SearchByInstitutionName(instituitionName);
-                return View(bookings);
+                TempData["Error"] = "The workshop bookings could not be loaded.";
             }
 
-            if (!string.IsNullOrEmpty(topic))
+            var bookings = loaded ?? new List<WorkshopBooking>();
+
+            if (isAdmin)
             {
-                var bookings = _wbs.FilterByTopic(topic);
-                return View(bookings);
+                var upcoming = _wbs.UpcomingSessions(bookings).Count;
+                ViewData["AdminNotification"] = $"You have {upcoming} upcoming workshop booking/s.";
             }
 
-            return View(allBookings);
+            if (!string.IsNullOrWhiteSpace(instituitionName))
+                bookings = bookings.Where(b => Matches(b.InstitutionName, instituitionName)).ToList();
+
+            if (!string.IsNullOrWhiteSpace(topic))
+                bookings = bookings.Where(b => Matches(b.Topic, topic)).ToList();
+
+            return View(bookings);
         }
         
 
@@ -53,72 +65,90 @@ namespace ReCenterHub.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("InstitutionName, TargetAudience, PhoneNumber,EmailAddress,Date_and_Time,OptionalNotes")] WorkshopBooking wb)
+        public async Task<IActionResult> Create(
+           [Bind("InstitutionName,TargetAudience,Topic,PhoneNumber,EmailAddress,Date_and_Time,OptionalNotes")] WorkshopBooking wb)
         {
-
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                try
-                {
-                    var admin = new Notification(newBookingCount);
-                    _notifier.Subscribe(admin);
-
-                    await _wbs.CreateAsync(wb);
-
-                    newBookingCount++;
-                    _notifier.Notify(newBookingCount);
-                    string notificationMessage = " You now have " + newBookingCount + " new booking/s.";
-                    TempData["Notification"] = notificationMessage;
-
-                    return RedirectToAction(nameof(Index));
-                }
-                catch (ArgumentException ex)
-                {
-                    TempData["Error"] = ex.Message;
-                }
+                return View(wb);
             }
 
-            return View(wb);
+            var created = await _wbs.CreateAsync(wb);
+
+            if (created == null)
+            {
+                TempData["Error"] = "Your workshop request could not be saved. Please try again.";
+                return View(wb);
+            }
+
+            return RedirectToAction("Index", "SuccessTab");
         }
 
         [HttpGet]
-        public IActionResult Update(int? id)
+        public async Task<IActionResult> Update(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
-            var booking = _wbs.GetWorkshopBookingByIdAsync(id.Value);
-            return View(booking);
-        }
 
-        [HttpPut]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Update(int? id,[Bind("InstitutionName, TargetAudience, PhoneNumber,EmailAddress,Date_and_Time,OptionalNotes")] WorkshopBooking wb)
-        {
-            try
-            {
-                await _wbs.UpdateAsync(wb);
-                return RedirectToAction(nameof(Index));
-            }
-            catch (ArgumentException ex)
-            {
-                TempData["Error"] = ex.Message;
-            }
-
-            return View(wb);
-        }
-
-        [HttpDelete]
-        public async Task<IActionResult> Delete(int? id)
-        {
             var booking = await _wbs.GetWorkshopBookingByIdAsync(id.Value);
 
             if (booking == null)
             {
                 return NotFound();
             }
-            await _wbs.Delete(booking);
+
+            return View(booking);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Update(
+            int? id,
+            [Bind("InstitutionName,TargetAudience,Topic,PhoneNumber,EmailAddress,Date_and_Time,OptionalNotes,Status")] WorkshopBooking wb)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            wb.WorkshopBookingID = id.Value;
+
+            if (!ModelState.IsValid)
+            {
+                return View(wb);
+            }
+
+            var updated = await _wbs.UpdateAsync(wb);
+
+            if (updated == null)
+            {
+                TempData["Error"] = "The workshop booking could not be updated.";
+                return View(wb);
+            }
+
+            TempData["Notification"] = "The workshop booking was updated.";
+            return RedirectToAction(nameof(Index));
+        }
+
+
+        [HttpDelete]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var deleted = await _wbs.DeleteAsync(id.Value);
+
+            TempData[deleted ? "Notification" : "Error"] = deleted
+                ? "The workshop booking was deleted."
+                : "The workshop booking could not be deleted.";
+
             return RedirectToAction(nameof(Index));
         }
     }

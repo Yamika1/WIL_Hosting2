@@ -6,7 +6,7 @@ namespace ReCenterHub.Models
     {
         [Key]
         public int IndividualBookingID { get; set; }
-        public string UserId { get; set; }
+        public string? UserId { get; set; }
 
         [Display(Name = "First Name")]
         public string FirstName { get; set; }

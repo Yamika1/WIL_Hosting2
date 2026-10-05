@@ -7,7 +7,7 @@ using static ReCenterHub.Services.ConcreteObserver;
 
 namespace ReCenterHub.Controllers
 {
-    [Authorize(Roles = "Client")]
+    [Authorize(Roles = "Client,Admin")]
     public class IndividualBookingController : Controller
     {
         private readonly IndividualBookingService _ibs;
@@ -20,28 +20,43 @@ namespace ReCenterHub.Controllers
             _notifier = notifier;
         }
 
+        private static bool Matches(string? value, string search) =>
+            value?.Contains(search, StringComparison.OrdinalIgnoreCase) == true;
+
         public async Task<IActionResult> Index(string? category, string? firstName, string? surname)
         {
-            var getAllBookings = _ibs.GetAllIndividualBookingsAsync();
+            var isAdmin = User.IsInRole("Admin");
 
-            var upcomingSessions = await _ibs.UpcomingSessions();
+           
+            var loaded = isAdmin
+                ? await _ibs.GetAllIndividualBookingsAsync()
+                : await _ibs.GetClientBookingsAsync();
 
-            if (!string.IsNullOrEmpty(firstName) || !string.IsNullOrEmpty(surname))
+            if (loaded == null)
             {
-                var bookings = _ibs.SearchByFirstNameAndSurname(firstName, surname);
-                return View(bookings);
+                TempData["Error"] = "The bookings could not be loaded.";
             }
 
-            if (!string.IsNullOrEmpty(category))
+            var bookings = loaded ?? new List<IndividualBooking>();
+
+           
+            if (isAdmin)
             {
-                var bookings =  _ibs.FilterByCategory(category);
-                return View(bookings);
+                var upcoming = _ibs.UpcomingSessions(bookings).Count;
+                ViewData["AdminNotification"] = $"You have {upcoming} upcoming individual booking/s.";
             }
 
-            return View(getAllBookings);
+            if (!string.IsNullOrWhiteSpace(firstName))
+                bookings = bookings.Where(b => Matches(b.FirstName, firstName)).ToList();
+
+            if (!string.IsNullOrWhiteSpace(surname))
+                bookings = bookings.Where(b => Matches(b.Surname, surname)).ToList();
+
+            if (!string.IsNullOrWhiteSpace(category))
+                bookings = bookings.Where(b => Matches(b.Category, category)).ToList();
+
+            return View(bookings);
         }
-
-
 
         [HttpGet]
         public IActionResult Create()
@@ -80,33 +95,56 @@ namespace ReCenterHub.Controllers
         }
 
         [HttpGet]
-        public IActionResult Update(int? id)
+        public async Task<IActionResult> Update(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
-            var booking = _ibs.GetIndividualBookingByIdAsync(id.Value);
+
+            var booking = await _ibs.GetIndividualBookingByIdAsync(id.Value);
+
+            if (booking == null)
+            {
+                return NotFound();
+            }
+
             return View(booking);
         }
 
-        [HttpPut]
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Update(int? id, [Bind("FirstName, Surname,Category,PhoneNumber,EmailAddress,Date_and_Time,OptionalNotes")] IndividualBooking ib)
+        public async Task<IActionResult> Update(
+           int? id,
+           [Bind("FirstName,Surname,Category,PhoneNumber,EmailAddress,Date_and_Time,OptionalNotes,Status")] IndividualBooking ib)
         {
-            try
+            if (id == null)
             {
-                await _ibs.UpdateAsync(ib);
-                return RedirectToAction(nameof(Index));
-            }
-            catch (ArgumentException ex)
-            {
-                TempData["Error"] = ex.Message;
+                return NotFound();
             }
 
-            return View(ib);
+          
+            ib.IndividualBookingID = id.Value;
+
+            if (!ModelState.IsValid)
+            {
+                return View(ib);
+            }
+
+            var updated = await _ibs.UpdateAsync(ib);
+
+            if (updated == null)
+            {
+                TempData["Error"] = "The booking could not be updated.";
+                return View(ib);
+            }
+
+            TempData["Notification"] = "The booking was updated.";
+            return RedirectToAction(nameof(Index));
         }
+        
 
+        
         [HttpDelete]
         public async Task<IActionResult> Delete(int? id)
         {

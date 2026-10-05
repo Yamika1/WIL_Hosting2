@@ -19,6 +19,10 @@ namespace Api.Controllers
         {
             _authDbContext = authDbContext;
         }
+        private string? CurrentUserId => User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        private bool CanAccess(WorkshopBooking booking) =>
+            User.IsInRole("Admin") || booking.UserId == CurrentUserId;
 
         [HttpGet]
         [Authorize(Roles = "Admin")]
@@ -29,13 +33,16 @@ namespace Api.Controllers
 
         [HttpGet]
         [Route("{id:int}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Client")]
         public IActionResult GetWorkshopsById(int id)
         {
             var workshopBooking = _authDbContext.WorkshopBooking.Find(id);
 
             if (workshopBooking is null)
                 return NotFound();
+
+            if (!CanAccess(workshopBooking))
+                return StatusCode(StatusCodes.Status403Forbidden);
 
             return Ok(workshopBooking);
         }
@@ -54,48 +61,50 @@ namespace Api.Controllers
 
         }
 
-        [HttpPost]
-        [Authorize(Roles = "Client")]
-        public IActionResult AddWorkshopBookings(AddWorkshopBookingDTO WorkshopBookingentity)
-        {
-            var WorkshopBooking = new WorkshopBooking()
-            {
-                InstitutionName = WorkshopBookingentity.InstitutionName,
-                TargetAudience = WorkshopBookingentity.TargetAudience,
-                Topic = WorkshopBookingentity.Topic,
-                Status = WorkshopBookingentity.Status,
+        [HttpPost][Authorize(Roles = "Client")]
+        public IActionResult AddWorkshopBookings(AddWorkshopBookingDTO WorkshopBookingentity) { 
+            
+            var WorkshopBooking = new WorkshopBooking() {
+                
+                UserId = User.FindFirstValue(ClaimTypes.NameIdentifier),
+                InstitutionName = WorkshopBookingentity.InstitutionName, 
+                TargetAudience = WorkshopBookingentity.TargetAudience, 
+                Topic = WorkshopBookingentity.Topic, 
+                Status = "Scheduled",
                 PhoneNumber = WorkshopBookingentity.PhoneNumber,
-                EmailAddress = WorkshopBookingentity.EmailAddress,
-                Date_and_Time = WorkshopBookingentity.Date_and_Time,
-                OptionalNotes = WorkshopBookingentity.OptionalNotes
-            };
-
-            _authDbContext.WorkshopBooking.Add(WorkshopBooking);
+                EmailAddress = WorkshopBookingentity.EmailAddress, 
+                Date_and_Time = WorkshopBookingentity.Date_and_Time, 
+                OptionalNotes = WorkshopBookingentity.OptionalNotes }; 
+            
+            _authDbContext.WorkshopBooking.Add(WorkshopBooking); 
             _authDbContext.SaveChanges();
-            return Ok(WorkshopBookingentity);
+            return Ok(WorkshopBooking);
         }
 
         [HttpPost(ActionName="Update")]
         [Route("{id:int}")]
-        [Authorize(Roles = "Admin")]
-        public IActionResult UpdateWorkshop(int id, WorkshopBooking WorkshopBookingentity)
-        {
-            var workshopBooking = _authDbContext.WorkshopBooking.Find(id);
-
-            if (workshopBooking is null)
-                return NotFound();
-
-            workshopBooking.InstitutionName = WorkshopBookingentity.InstitutionName;
-            workshopBooking.TargetAudience = WorkshopBookingentity.TargetAudience;
+        [Authorize(Roles = "Client,Admin")]
+        public IActionResult UpdateWorkshop(int id, WorkshopBooking WorkshopBookingentity) {
+            var workshopBooking = _authDbContext.WorkshopBooking.Find(id); 
+            
+            if (workshopBooking is null) return NotFound();
+            
+            if (!CanAccess(workshopBooking))
+                return StatusCode(StatusCodes.Status403Forbidden); 
+            workshopBooking.InstitutionName = WorkshopBookingentity.InstitutionName; 
+            workshopBooking.TargetAudience = WorkshopBookingentity.TargetAudience; 
             workshopBooking.EmailAddress = WorkshopBookingentity.EmailAddress;
-            workshopBooking.Status = WorkshopBookingentity.Status;
             workshopBooking.Topic = WorkshopBookingentity.Topic;
-            workshopBooking.PhoneNumber = WorkshopBookingentity.PhoneNumber;
+            workshopBooking.PhoneNumber = WorkshopBookingentity.PhoneNumber; 
             workshopBooking.Date_and_Time = WorkshopBookingentity.Date_and_Time;
-            workshopBooking.OptionalNotes = WorkshopBookingentity.OptionalNotes;
-
+            workshopBooking.OptionalNotes = WorkshopBookingentity.OptionalNotes; 
+            
+            if (User.IsInRole("Admin") && !string.IsNullOrWhiteSpace(WorkshopBookingentity.Status)) { 
+                
+                workshopBooking.Status = WorkshopBookingentity.Status; 
+            } 
             _authDbContext.SaveChanges();
-            return Ok(workshopBooking);
+            return Ok(workshopBooking); 
         }
 
         [HttpPost(ActionName="Delete")]
@@ -104,12 +113,19 @@ namespace Api.Controllers
         public IActionResult DeleteWorkshopBooking(int id)
         {
             var workshopBooking = _authDbContext.WorkshopBooking.Find(id);
-
+            
             if (workshopBooking is null)
-                return NotFound();
-
+                
+                return NotFound(); 
+            
+            if (!CanAccess(workshopBooking)) 
+                
+                return StatusCode(StatusCodes.Status403Forbidden);
+            
             _authDbContext.WorkshopBooking.Remove(workshopBooking);
+            
             _authDbContext.SaveChanges();
+            
             return Ok();
         }
 

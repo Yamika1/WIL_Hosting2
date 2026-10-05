@@ -9,69 +9,42 @@
     <div class="account-box">
         <h2 class="text-center mb-4">Register</h2>
 
-       
         <form asp-controller="Account" asp-action="Register" method="post">
-            @Html.AntiForgeryToken()
-
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
             <div class="mb-3">
-                <label asp-for="Name" class="form-label"></label>
-                <input asp-for="Name" class="form-control" autocomplete="name" />
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-
-            <div class="mb-3">
                 <label asp-for="Email" class="form-label"></label>
-                <input asp-for="Email"
-                       class="form-control"
-                       type="email"
-                       autocomplete="email" />
+                <input asp-for="Email" class="form-control" type="email" autocomplete="email" />
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
 
             <div class="mb-3">
                 <label asp-for="Password" class="form-label"></label>
-                <input asp-for="Password"
-                       class="form-control"
-                       type="password"
-                       autocomplete="new-password" />
+                <input asp-for="Password" class="form-control" type="password" autocomplete="new-password" />
+                <div class="form-text">
+                    Use 8 or more characters, with an upper-case letter, a lower-case letter, a number and a symbol.
+                </div>
                 <span asp-validation-for="Password" class="text-danger"></span>
             </div>
 
             <div class="mb-3">
                 <label asp-for="ConfirmPassword" class="form-label"></label>
-                <input asp-for="ConfirmPassword"
-                       class="form-control"
-                       type="password"
-                       autocomplete="new-password" />
+                <input asp-for="ConfirmPassword" class="form-control" type="password" autocomplete="new-password" />
                 <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
             </div>
 
-            <button type="submit" class="btn btn-success w-100 p-2">
-                Register
-            </button>
+            <button type="submit" class="btn btn-success w-100 p-2">Register</button>
 
             <p class="text-center mt-3">
                 Already have an account?
-                <a asp-controller="Account"
-                   asp-action="Login"
-                   class="text-decoration-none">
-                    Login
-                </a>
+                <a asp-controller="Account" asp-action="Login" class="text-decoration-none">Login</a>
             </p>
 
             <div class="text-center">
-                <a asp-controller="Home"
-                   asp-action="Index"
-                   class="text-decoration-none">
-                    Back
-                </a>
+                <a asp-controller="Home" asp-action="Index" class="text-decoration-none">Back</a>
             </div>
         </form>
     </div>
-   
-
 </div>
 
 @section Scripts {

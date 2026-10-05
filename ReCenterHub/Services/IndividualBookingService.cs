@@ -1,11 +1,14 @@
-﻿using Microsoft.Identity.Client;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.Identity.Client;
 using ReCenterHub.Models;
+using System.Net;
 using System.Net.Http.Headers;
 using static ReCenterHub.Services.ConcreteObserver;
 
 
 namespace ReCenterHub.Services
 {
+    [Authorize(Roles = "Client,Admin")]
     public class IndividualBookingService
     {
         private readonly HttpClient _httpClient;
@@ -30,6 +33,14 @@ namespace ReCenterHub.Services
             }
         }
 
+        private static void ThrowIfUnauthorized(HttpResponseMessage response)
+        {
+            if (response.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                throw new ApiUnauthorizedException();
+            }
+        }
+
         public async Task<IndividualBooking?> CreateAsync(IndividualBooking request)
         {
             AddToken(); 
@@ -42,11 +53,28 @@ namespace ReCenterHub.Services
             return await response.Content.ReadFromJsonAsync<IndividualBooking>();
         }
 
-        public async Task<List<IndividualBooking>?> GetAllIndividualBookingsAsync()
+        public async Task<List<IndividualBooking>?> GetClientBookingsAsync()
         {
             AddToken();
 
             var response = await _httpClient.GetAsync("api/IndividualBooking/client-bookings");
+            ThrowIfUnauthorized(response);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return null;
+            }
+
+            return await response.Content.ReadFromJsonAsync<List<IndividualBooking>>();
+        }
+
+        public async Task<List<IndividualBooking>?> GetAllIndividualBookingsAsync()
+        {
+            AddToken();
+
+            var response = await _httpClient.GetAsync("api/IndividualBooking/{id}");
+            ThrowIfUnauthorized(response);
+
             if (!response.IsSuccessStatusCode)
             {
                 return null;
@@ -59,19 +87,23 @@ namespace ReCenterHub.Services
         {
             AddToken();
 
-            var response = await _httpClient.PutAsJsonAsync($"api/IndividualBooking/{request.IndividualBookingID}", request);
+            var response = await _httpClient.PutAsJsonAsync(
+                $"api/IndividualBooking/{request.IndividualBookingID}", request);
+            ThrowIfUnauthorized(response);
+
             if (!response.IsSuccessStatusCode)
             {
                 return null;
             }
-            return await response.Content.ReadFromJsonAsync<IndividualBooking>();
 
+            return await response.Content.ReadFromJsonAsync<IndividualBooking>();
         }
 
         public async Task<bool> Delete(IndividualBooking request)
         {
             AddToken();
             var response = await _httpClient.DeleteAsync($"api/IndividualBooking/{request.IndividualBookingID}");
+            ThrowIfUnauthorized(response);
             return response.IsSuccessStatusCode;
         }
 
@@ -109,14 +141,12 @@ namespace ReCenterHub.Services
             return null;
         }
 
-        public async Task<List<IndividualBooking>> UpcomingSessions()
+        public List<IndividualBooking> UpcomingSessions(IEnumerable<IndividualBooking> bookings)
         {
-            List<IndividualBooking> upcomingSessions = new List<IndividualBooking>();
-            var allbookings = await GetAllIndividualBookingsAsync();
-            upcomingSessions = allbookings.Where(b => b.Date_and_Time > DateTime.Now && b.Status == "Scheduled" || b.Status == "Rescheduled").ToList();
-            return upcomingSessions;
+            return bookings.Where(b =>
+                b.Date_and_Time > DateTime.Now &&
+                (b.Status == "Scheduled" || b.Status == "Rescheduled")
+            ).ToList();
         }
-
-
     }
 }

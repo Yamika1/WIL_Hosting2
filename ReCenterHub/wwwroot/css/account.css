@@ -1,5 +1,38 @@
-﻿.account-container {
-    background-image: url('../images/Screenshot 2026-09-25 134544.png');
+﻿.account-shell {
+    min-height: 100vh;
+    display: flex;
+}
+
+.account-brand {
+    position: absolute;
+    top: 1rem;
+    left: 1.25rem;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    color: #fff;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-shadow: 0 1px 6px rgba(0, 0, 0, .55);
+}
+
+    .account-brand:hover {
+        color: #d4af37;
+    }
+
+    .account-brand span {
+        display: inline-grid;
+        place-items: center;
+        width: 2rem;
+        height: 2rem;
+        border-radius: 50%;
+        background: #d4af37;
+        color: #3f4632;
+    }
+
+.account-container {
+    background-image: url("../images/Screenshot 2026-09-25 134544.png");
     background-size: cover;
     background-position: center;
     background-repeat: repeat-y;
@@ -17,5 +50,5 @@
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
     max-width: 500px;
     width: 100%;
-    opacity: 0.9;
+    opacity: 0.95;
 }

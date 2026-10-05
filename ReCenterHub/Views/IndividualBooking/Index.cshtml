@@ -1,77 +1,51 @@
 ﻿@model IEnumerable<ReCenterHub.Models.IndividualBooking>
 
 @{
-    ViewData["Title"] = "Individual Bookings";
+    ViewData["Title"] = "My Sessions";
+    var upcoming = ViewData["UpcomingCount"] as int? ?? 0;
 }
 
-<div class="container py-4">
-    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
-        <div>
-            <h1>Individual Bookings</h1>
-            <p class="text-muted mb-0">Manage your individual sessions.</p>
-        </div>
+<div class="page-heading">
+    <span class="eyebrow">Your bookings</span>
+    <h1>My Individual Sessions</h1>
+    <p>You have @upcoming upcoming session@(upcoming == 1 ? "" : "s").</p>
+</div>
         <a asp-action="Create" class="btn btn-primary">+ New Booking</a>
     </div>
 
-    @if (TempData["Notification"] != null)
-    {
-        <div class="alert alert-success">
-            @TempData["Notification"]
-        </div>
-    }
+<div class="table-card">
+    <div class="table-toolbar">
+        <form asp-action="Index" method="get" class="filter-form">
+            <input type="text" name="firstName" value="@ViewData["firstName"]"
+                   class="form-control" placeholder="First name" aria-label="First name" />
+            <input type="text" name="surname" value="@ViewData["surname"]"
+                   class="form-control" placeholder="Surname" aria-label="Surname" />
+            <input type="text" name="category" value="@ViewData["category"]"
+                   class="form-control" placeholder="Category" aria-label="Category" />
+            <button type="submit" class="btn-outline-brand btn-small">Search</button>
+            <a asp-action="Index" class="btn-outline-brand btn-small">Clear</a>
+        </form>
 
-    @if (TempData["Error"] != null)
-    {
-        <div class="alert alert-danger">
-            @TempData["Error"]
-        </div>
-    }
-
-    <form asp-action="Index" method="get" class="card card-body mb-4">
-        <div class="row g-3">
-            <div class="col-md-4">
-                <label for="firstName" class="form-label">First name</label>
-                <input type="text" name="firstName" id="firstName"
-                       class="form-control" placeholder="Search first name" />
-            </div>
-
-            <div class="col-md-4">
-                <label for="surname" class="form-label">Surname</label>
-                <input type="text" name="surname" id="surname"
-                       class="form-control" placeholder="Search surname" />
-            </div>
-
-            <div class="col-md-4">
-                <label for="category" class="form-label">Category</label>
-                <input type="text" name="category" id="category"
-                       class="form-control" placeholder="Search category" />
-            </div>
-        </div>
-
-        <div class="mt-3 d-flex gap-2">
-            <button type="submit" class="btn btn-primary">Search</button>
-            <a asp-action="Index" class="btn btn-outline-secondary">Clear</a>
-        </div>
+        <a asp-action="Create" class="btn-brand">+ New booking</a>
+    </div>
     </form>
 
     @if (Model == null || !Model.Any())
     {
-        <div class="alert alert-info">
-            No individual bookings were found.
-        </div>
+        <div class="empty-state">No individual bookings were found.</div>
     }
     else
     {
         <div class="table-responsive">
-            <table class="table table-striped table-hover align-middle">
-                <thead class="table-dark">
+            <table class="styled-table">
+                <thead>
                     <tr>
-                        <th>First Name</th>
+                        <th>First name</th>
                         <th>Surname</th>
                         <th>Category</th>
                         <th>Phone</th>
                         <th>Email</th>
-                        <th>Date and Time</th>
+                        <th>Date and time</th>
                         <th>Status</th>
                         <th>Actions</th>
                     </tr>
@@ -79,6 +53,8 @@
                 <tbody>
                     @foreach (var booking in Model)
                     {
+                        var status = string.IsNullOrWhiteSpace(booking.Status) ? "Pending" : booking.Status;
+
                         <tr>
                             <td>@booking.FirstName</td>
                             <td>@booking.Surname</td>
@@ -86,23 +62,21 @@
                             <td>@booking.PhoneNumber</td>
                             <td>@booking.EmailAddress</td>
                             <td>@booking.Date_and_Time.ToString("dd MMM yyyy, HH:mm")</td>
-                            <td>@(string.IsNullOrWhiteSpace(booking.Status) ? "Pending" : booking.Status)</td>
+                            <td><span class="status-chip status-@status.ToLower()">@status</span></td>
                             <td>
-                                <div class="d-flex gap-2">
-                                    <a asp-action="Update"
-                                       asp-route-id="@booking.IndividualBookingID"
-                                       class="btn btn-sm btn-outline-primary">
-                                        Edit
-                                    </a>
+                                <div class="row-actions">
+                                    @if (!BookingStatuses.IsClosed(booking.Status))
+                                    {
+                                        <a asp-action="Update"
+                                           asp-route-id="@booking.IndividualBookingID"
+                                           class="btn-outline-brand btn-small">Edit</a>
+                                    }
 
                                     <form asp-action="Delete"
                                           asp-route-id="@booking.IndividualBookingID"
                                           method="post"
                                           onsubmit="return confirm('Are you sure you want to delete this booking?');">
-                                        @Html.AntiForgeryToken()
-                                        <button type="submit" class="btn btn-sm btn-outline-danger">
-                                            Delete
-                                        </button>
+                                        <button type="submit" class="btn-outline-brand btn-danger-soft btn-small">Delete</button>
                                     </form>
                                 </div>
                             </td>

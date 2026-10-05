@@ -1,0 +1,128 @@
+﻿@model ReCenterHub.ViewModels.AdminDashboardViewModel
+
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="page-heading">
+    <span class="eyebrow">Administration</span>
+    <h1>Admin Dashboard</h1>
+    <p>Review booking requests and update their status.</p>
+</div>
+
+@if (Model.NewBookingCount > 0)
+{
+    <div class="notice-banner" role="status">
+        You now have @Model.NewBookingCount new booking/s.
+    </div>
+}
+
+<div class="table-card admin-section">
+    <div class="table-toolbar">
+        <h2 class="admin-heading">Individual sessions (@Model.IndividualBookings.Count)</h2>
+    </div>
+
+    @if (!Model.IndividualBookings.Any())
+    {
+        <div class="empty-state">No individual bookings yet.</div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="styled-table">
+                <thead>
+                    <tr>
+                        <th>Client</th>
+                        <th>Category</th>
+                        <th>Contact</th>
+                        <th>Date and time</th>
+                        <th>Notes</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var b in Model.IndividualBookings)
+                    {
+                        var current = string.IsNullOrWhiteSpace(b.Status) ? BookingStatuses.Pending : b.Status;
+
+                        <tr>
+                            <td>@b.FirstName @b.Surname</td>
+                            <td>@b.Category</td>
+                            <td>@b.PhoneNumber<br />@b.EmailAddress</td>
+                            <td>@b.Date_and_Time.ToString("dd MMM yyyy, HH:mm")</td>
+                            <td>@b.OptionalNotes</td>
+                            <td>
+                                <form asp-action="SetIndividualStatus" method="post" class="status-form">
+                                    <input type="hidden" name="id" value="@b.IndividualBookingID" />
+                                    <select name="status" class="form-select" aria-label="Status">
+                                        @foreach (var s in BookingStatuses.All)
+                                        {
+                                            <option value="@s" selected="@(s == current)">@s</option>
+                                        }
+                                    </select>
+                                    <button type="submit" class="btn-outline-brand btn-small">Save</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+<div class="table-card admin-section">
+    <div class="table-toolbar">
+        <h2 class="admin-heading">Workshops (@Model.WorkshopBookings.Count)</h2>
+    </div>
+
+    @if (!Model.WorkshopBookings.Any())
+    {
+        <div class="empty-state">No workshop bookings yet.</div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="styled-table">
+                <thead>
+                    <tr>
+                        <th>Institution</th>
+                        <th>Audience</th>
+                        <th>Topic</th>
+                        <th>Contact</th>
+                        <th>Date and time</th>
+                        <th>Notes</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var w in Model.WorkshopBookings)
+                    {
+                        var current = string.IsNullOrWhiteSpace(w.Status) ? BookingStatuses.Pending : w.Status;
+
+                        <tr>
+                            <td>@w.InstitutionName</td>
+                            <td>@w.TargetAudience</td>
+                            <td>@(string.IsNullOrWhiteSpace(w.Topic) ? "Not specified" : w.Topic)</td>
+                            <td>@w.PhoneNumber<br />@w.EmailAddress</td>
+                            <td>@w.Date_and_Time.ToString("dd MMM yyyy, HH:mm")</td>
+                            <td>@w.OptionalNotes</td>
+                            <td>
+                                <form asp-action="SetWorkshopStatus" method="post" class="status-form">
+                                    <input type="hidden" name="id" value="@w.WorkshopBookingID" />
+                                    <select name="status" class="form-select" aria-label="Status">
+                                        @foreach (var s in BookingStatuses.All)
+                                        {
+                                            <option value="@s" selected="@(s == current)">@s</option>
+                                        }
+                                    </select>
+                                    <button type="submit" class="btn-outline-brand btn-small">Save</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
