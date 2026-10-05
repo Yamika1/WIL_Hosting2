@@ -61,7 +61,7 @@ namespace Api.Controllers
                 return Ok(individualBookingentity);
             }
 
-            [HttpPut]
+            [HttpPost(ActionName="Update")]
             [Route("{id:int}")]
             [Authorize(Roles = "Client")]
             public IActionResult UpdateBooking(int id, UpdateIndividualBookingDTO individualBookingentity)
@@ -84,7 +84,7 @@ namespace Api.Controllers
                 return Ok(individualBooking);
             }
 
-            [HttpDelete]
+            [HttpPost(ActionName="Delete")]
             [Route("{id:int}")]
             [Authorize(Roles = "Client")]
             public IActionResult DeleteBooking(int id)
@@ -99,6 +99,22 @@ namespace Api.Controllers
                 return Ok();
             }
 
-
+        [HttpGet("search-by-name")]
+        [Authorize(Roles = "Admin")]
+        public IEnumerable<IndividualBooking> SearchByFirstNameAndSurname(string firstName, string surname)
+        {
+            var statusQuery = from booking in _authDbContext.IndividualBooking select booking;
+            var searchResults = statusQuery.Where(c => c.FirstName == firstName && c.Surname == surname);
+            return searchResults.ToList();
         }
+        [HttpGet("filter-by-category")]
+        [Authorize(Roles = "Admin")]
+        public IEnumerable<IndividualBooking> FilterByCategory(string category)
+        {
+            var statusQuery = from booking in _authDbContext.IndividualBooking select booking;
+            var searchResults = statusQuery.Where(c => c.Category == category);
+            return searchResults.ToList();
+        }
+
+    }
     }

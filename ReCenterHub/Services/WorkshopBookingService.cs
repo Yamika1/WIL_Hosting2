@@ -89,7 +89,7 @@ namespace ReCenterHub.Services
 
         public async Task<List<IndividualBooking>?> SearchByInstitutionName(string institutionName)
         {
-            var response = await _httpClient.GetAsync($"api/IndividualBooking/SearchByInstitutionName?institutionName={institutionName}");
+            var response = await _httpClient.GetAsync($"api/IndividualBooking/search-by-institutionname?institutionName={institutionName}");
             if (response.IsSuccessStatusCode)
             {
                 return await response.Content.ReadFromJsonAsync<List<IndividualBooking>>();
@@ -99,7 +99,7 @@ namespace ReCenterHub.Services
 
         public async Task<List<IndividualBooking>?> FilterByTopic(string topic)
         {
-            var response = await _httpClient.GetAsync($"api/IndividualBooking/FilterByTopic?topic={topic}");
+            var response = await _httpClient.GetAsync($"api/IndividualBooking/filter-by-topic?topic={topic}");
             if (response.IsSuccessStatusCode)
             {
                 return await response.Content.ReadFromJsonAsync<List<IndividualBooking>>();

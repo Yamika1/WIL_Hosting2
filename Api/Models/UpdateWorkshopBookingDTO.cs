@@ -9,7 +9,9 @@ namespace Api.Models
 
         [Display(Name = "Institution Name")]
         public string InstitutionName { get; set; }
-        public int Age { get; set; }
+
+        [Display(Name = "Target Audience")]
+        public string TargetAudience { get; set; }
 
         [Display(Name = "Phone Number")]
         public string PhoneNumber { get; set; }
@@ -29,4 +31,3 @@ namespace Api.Models
         [Display(Name = "Status")]
         public string? Status { get; set; }
     }
-}

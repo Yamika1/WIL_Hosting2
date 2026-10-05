@@ -91,7 +91,7 @@ namespace ReCenterHub.Services
 
         public async Task<List<IndividualBooking>?> SearchByFirstNameAndSurname(string firstName, string surname)
         {
-            var response = await _httpClient.GetAsync($"api/IndividualBooking/SearchByFirstNameAndSurname?firstName={firstName}&surname={surname}");
+            var response = await _httpClient.GetAsync($"api/IndividualBooking/search-by-name?firstName={firstName}&surname={surname}");
             if (response.IsSuccessStatusCode)
             {
                 return await response.Content.ReadFromJsonAsync<List<IndividualBooking>>();
@@ -101,7 +101,7 @@ namespace ReCenterHub.Services
 
         public async Task<List<IndividualBooking>?> FilterByCategory(string category)
         {
-            var response = await _httpClient.GetAsync($"api/IndividualBooking/FilterByCategory?category={category}");
+            var response = await _httpClient.GetAsync($"api/IndividualBooking/filter-by-category?category={category}");
             if (response.IsSuccessStatusCode)
             {
                 return await response.Content.ReadFromJsonAsync<List<IndividualBooking>>();

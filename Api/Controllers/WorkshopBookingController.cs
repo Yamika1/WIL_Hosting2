@@ -75,7 +75,7 @@ namespace Api.Controllers
             return Ok(WorkshopBookingentity);
         }
 
-        [HttpPut]
+        [HttpPost(ActionName="Update")]
         [Route("{id:int}")]
         [Authorize(Roles = "Admin")]
         public IActionResult UpdateWorkshop(int id, WorkshopBooking WorkshopBookingentity)
@@ -98,7 +98,7 @@ namespace Api.Controllers
             return Ok(workshopBooking);
         }
 
-        [HttpDelete]
+        [HttpPost(ActionName="Delete")]
         [Authorize(Roles = "Admin")]
         [Route("{id:int}")]
         public IActionResult DeleteWorkshopBooking(int id)
@@ -113,21 +113,22 @@ namespace Api.Controllers
             return Ok();
         }
 
-        [HttpGet("SearchByInstitutionName")]
-        public IEnumerable<WorkshopBooking> SearchByInstitutionName(string institutionName)
+        [HttpGet("search-by-institutionname")]
+        [Authorize(Roles="Admin")]
+        public async Task<IEnumerable<WorkshopBooking>> SearchByInstitutionName(string institutionName)
         {
             var statusQuery = from booking in _authDbContext.WorkshopBooking select booking;
-            var searchResults = statusQuery.Include(c => c.WorkshopBookingID).Where(c => c.InstitutionName == institutionName);
+            var searchResults = await statusQuery.Where(c => c.InstitutionName.Contains(institutionName)).ToListAsync();
             return searchResults.ToList();
         }
 
-        [HttpGet("FilterByTopic")]
-        public IEnumerable<WorkshopBooking> FilterByTopic(string topic)
+        [HttpGet("filter-by-topic")]
+        [Authorize(Roles="Admin")]
+        public async Task<IEnumerable<WorkshopBooking>> FilterByTopic(string topic)
         {
             var statusQuery = from booking in _authDbContext.WorkshopBooking select booking;
-            var searchResults = statusQuery.Include(c => c.WorkshopBookingID).Where(c => c.Topic == topic);
+            var searchResults = await statusQuery.Where(c => c.Topic == topic).ToListAsync();
             return searchResults.ToList();
-
         }
         
 
