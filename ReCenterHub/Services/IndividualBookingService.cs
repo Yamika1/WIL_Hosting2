@@ -115,16 +115,7 @@ namespace ReCenterHub.Services
             var allbookings = await GetAllIndividualBookingsAsync();
             upcomingSessions = allbookings.Where(b => b.Date_and_Time > DateTime.Now && b.Status == "Scheduled" || b.Status == "Rescheduled").ToList();
             return upcomingSessions;
-
         }
-
-        
-
-          
-
-
-
-
 
 
     }
