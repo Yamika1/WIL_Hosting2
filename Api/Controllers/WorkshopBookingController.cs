@@ -33,7 +33,7 @@ namespace Api.Controllers
 
         [HttpGet]
         [Route("{id:int}")]
-        [Authorize(Roles = "Client")]
+        [Authorize(Roles = "Client,Admin")]
         public IActionResult GetWorkshopsById(int id)
         {
             var workshopBooking = _authDbContext.WorkshopBooking.Find(id);

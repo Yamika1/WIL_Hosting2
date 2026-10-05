@@ -2,10 +2,7 @@
 using Api.Models;
 using Api.Models.Entities;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Net.Sockets;
 using System.Security.Claims;
 
 namespace Api.Controllers
@@ -16,17 +13,35 @@ namespace Api.Controllers
     {
         private readonly AuthDbContext _authDbContext;
 
-        public IndividualBookingController(AuthDbContext authDbContext)
+        public IndividualBookingController(
+            AuthDbContext authDbContext)
         {
             _authDbContext = authDbContext;
         }
-        private string? CurrentUserId => User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-        private bool CanAccess(IndividualBooking booking) =>
-            User.IsInRole("Admin") || booking.UserId == CurrentUserId;
+        private string? CurrentUserId =>
+            User.FindFirstValue(
+                ClaimTypes.NameIdentifier);
 
+        private bool CanAccess(
+            IndividualBooking booking) =>
+            User.IsInRole("Admin") ||
+            booking.UserId == CurrentUserId;
 
+        // ADMIN: GET ALL INDIVIDUAL BOOKINGS
+        [HttpGet]
+        [Authorize(Roles = "Admin")]
+        public IActionResult GetAllBookings()
+        {
+            var bookings = _authDbContext
+                .IndividualBooking
+                .OrderBy(b => b.Date_and_Time)
+                .ToList();
 
+            return Ok(bookings);
+        }
+
+        // CLIENT: GET OWN BOOKINGS
         [HttpGet("client-bookings")]
         [Authorize(Roles = "Client")]
         public IActionResult GetClientBookings()
@@ -34,103 +49,163 @@ namespace Api.Controllers
             var userId = User.FindFirstValue(
                 ClaimTypes.NameIdentifier);
 
-            var bookings = _authDbContext.IndividualBooking
+            var bookings = _authDbContext
+                .IndividualBooking
                 .Where(b => b.UserId == userId)
+                .OrderBy(b => b.Date_and_Time)
                 .ToList();
-            return Ok(bookings);
 
+            return Ok(bookings);
         }
 
+        // CLIENT OR ADMIN: GET ONE BOOKING
         [HttpGet("{id:int}")]
         [Authorize(Roles = "Client,Admin")]
         public IActionResult GetBookingById(int id)
         {
-            var booking = _authDbContext.IndividualBooking.Find(id);
+            var booking =
+                _authDbContext.IndividualBooking.Find(id);
 
             if (booking is null)
+            {
                 return NotFound();
+            }
 
             if (!CanAccess(booking))
-                return StatusCode(StatusCodes.Status403Forbidden);
+            {
+                return StatusCode(
+                    StatusCodes.Status403Forbidden);
+            }
 
             return Ok(booking);
         }
 
+        // CLIENT: CREATE BOOKING
         [HttpPost]
-        [Authorize(Roles = "Client,Admin")]
-        public IActionResult AddIndividualBookings(AddIndividualBookingDTO individualBookingentity)
+        [Authorize(Roles = "Client")]
+        public IActionResult AddIndividualBookings(
+            AddIndividualBookingDTO individualBookingentity)
         {
-            
-                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = User.FindFirstValue(
+                ClaimTypes.NameIdentifier);
 
-                var individualBooking = new IndividualBooking()
+            var individualBooking =
+                new IndividualBooking
                 {
                     UserId = userId,
-                    FirstName = individualBookingentity.FirstName,
-                    Surname = individualBookingentity.Surname,
-                    Category = individualBookingentity.Category,
-                    PhoneNumber = individualBookingentity.PhoneNumber,
-                    EmailAddress = individualBookingentity.EmailAddress,
-                    Date_and_Time = individualBookingentity.Date_and_Time,
-                    OptionalNotes = individualBookingentity.OptionalNotes,
+                    FirstName =
+                        individualBookingentity.FirstName,
+                    Surname =
+                        individualBookingentity.Surname,
+                    Category =
+                        individualBookingentity.Category,
+                    PhoneNumber =
+                        individualBookingentity.PhoneNumber,
+                    EmailAddress =
+                        individualBookingentity.EmailAddress,
+                    Date_and_Time =
+                        individualBookingentity.Date_and_Time,
+                    OptionalNotes =
+                        individualBookingentity.OptionalNotes,
+
                     Status = "Scheduled"
                 };
 
-                _authDbContext.IndividualBooking.Add(individualBooking);
-                _authDbContext.SaveChanges();
-                return Ok(individualBookingentity);
-            }
-
-            [HttpPut]
-            [Route("{id:int}")]
-        [Authorize(Roles = "Client,Admin")]
-        public IActionResult UpdateBooking(int id, UpdateIndividualBookingDTO individualBookingentity)
-            {
-             
-                var individualBooking = _authDbContext.IndividualBooking.Find(id);
-
-                if (individualBooking is null)
-                    return NotFound();
-
-            if (!CanAccess(individualBooking))
-                return StatusCode(StatusCodes.Status403Forbidden);
-
-
-            individualBooking.FirstName = individualBookingentity.FirstName;
-                individualBooking.Surname = individualBookingentity.Surname;
-                individualBooking.EmailAddress = individualBookingentity.EmailAddress;
-                individualBooking.Category = individualBookingentity.Category;
-                individualBooking.PhoneNumber = individualBookingentity.PhoneNumber;
-                individualBooking.Date_and_Time = individualBookingentity.Date_and_Time;
-                individualBooking.OptionalNotes = individualBookingentity.OptionalNotes;
-
-
-            if (User.IsInRole("Admin") && !string.IsNullOrWhiteSpace(individualBookingentity.Status))
-                individualBookingentity.Status = individualBookingentity.Status;
+            _authDbContext
+                .IndividualBooking
+                .Add(individualBooking);
 
             _authDbContext.SaveChanges();
-                return Ok(individualBooking);
-            }
 
-            [HttpDelete]
-        [Route("{id:int}")]
-            [Authorize(Roles = "Client,Admin")]
-            public IActionResult DeleteBooking(int id)
+            return Ok(individualBooking);
+        }
+
+        // CLIENT OR ADMIN: UPDATE BOOKING
+        [HttpPut("{id:int}")]
+        [Authorize(Roles = "Client,Admin")]
+        public IActionResult UpdateBooking(
+            int id,
+            UpdateIndividualBookingDTO individualBookingentity)
+        {
+            var individualBooking =
+                _authDbContext
+                    .IndividualBooking
+                    .Find(id);
+
+            if (individualBooking is null)
             {
-                var indivdualBooking = _authDbContext.IndividualBooking.Find(id);
-
-                if (indivdualBooking is null)
-                    return NotFound();
-
-            if (!CanAccess(indivdualBooking))
-                return StatusCode(StatusCodes.Status403Forbidden);
-
-            _authDbContext.IndividualBooking.Remove(indivdualBooking);
-                _authDbContext.SaveChanges();
-                return Ok();
+                return NotFound();
             }
 
-        
+            if (!CanAccess(individualBooking))
+            {
+                return StatusCode(
+                    StatusCodes.Status403Forbidden);
+            }
 
+            individualBooking.FirstName =
+                individualBookingentity.FirstName;
+
+            individualBooking.Surname =
+                individualBookingentity.Surname;
+
+            individualBooking.EmailAddress =
+                individualBookingentity.EmailAddress;
+
+            individualBooking.Category =
+                individualBookingentity.Category;
+
+            individualBooking.PhoneNumber =
+                individualBookingentity.PhoneNumber;
+
+            individualBooking.Date_and_Time =
+                individualBookingentity.Date_and_Time;
+
+            individualBooking.OptionalNotes =
+                individualBookingentity.OptionalNotes;
+
+            // ONLY ADMIN CAN CHANGE STATUS
+            if (User.IsInRole("Admin") &&
+                !string.IsNullOrWhiteSpace(
+                    individualBookingentity.Status))
+            {
+                individualBooking.Status =
+                    individualBookingentity.Status;
+            }
+
+            _authDbContext.SaveChanges();
+
+            return Ok(individualBooking);
+        }
+
+        // ADMIN: DELETE BOOKING
+        [HttpDelete("{id:int}")]
+        [Authorize(Roles = "Admin")]
+        public IActionResult DeleteBooking(int id)
+        {
+            var individualBooking =
+                _authDbContext
+                    .IndividualBooking
+                    .Find(id);
+
+            if (individualBooking is null)
+            {
+                return NotFound();
+            }
+
+            if (!CanAccess(individualBooking))
+            {
+                return StatusCode(
+                    StatusCodes.Status403Forbidden);
+            }
+
+            _authDbContext
+                .IndividualBooking
+                .Remove(individualBooking);
+
+            _authDbContext.SaveChanges();
+
+            return Ok();
+        }
     }
-    }
+}

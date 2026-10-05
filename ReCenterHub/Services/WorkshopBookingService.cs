@@ -9,8 +9,9 @@ namespace ReCenterHub.Services
         private readonly HttpClient _httpClient;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-
-        public WorkshopBookingService(HttpClient httpClient, IHttpContextAccessor httpContextAccessor)
+        public WorkshopBookingService(
+            HttpClient httpClient,
+            IHttpContextAccessor httpContextAccessor)
         {
             _httpClient = httpClient;
             _httpContextAccessor = httpContextAccessor;
@@ -28,119 +29,94 @@ namespace ReCenterHub.Services
             }
         }
 
-        private static void ThrowIfUnauthorized(HttpResponseMessage response)
+        private static void ThrowIfUnauthorized(
+            HttpResponseMessage response)
         {
             if (response.StatusCode == HttpStatusCode.Unauthorized)
             {
                 throw new ApiUnauthorizedException();
-
             }
         }
 
-        public async Task<WorkshopBooking?> CreateAsync(WorkshopBooking request)
+        public async Task<WorkshopBooking?> CreateAsync(
+            WorkshopBooking request)
         {
             AddToken();
 
-            var response = await _httpClient.PostAsJsonAsync("api/WorkshopBooking/", request);
+            var response = await _httpClient.PostAsJsonAsync(
+                "api/WorkshopBooking/",
+                request);
+
             ThrowIfUnauthorized(response);
 
             if (!response.IsSuccessStatusCode)
             {
                 return null;
             }
-            return await response.Content.ReadFromJsonAsync<WorkshopBooking>();
 
+            return await response.Content
+                .ReadFromJsonAsync<WorkshopBooking>();
         }
 
-        public async Task<List<WorkshopBooking>?> GetAllWorkshopBookingsAsync()
+        public async Task<List<WorkshopBooking>?>
+            GetAllWorkshopBookingsAsync()
         {
             AddToken();
 
-            var response = await _httpClient.GetAsync("api/WorkshopBooking/client-workshops");
+            var response = await _httpClient.GetAsync(
+                "api/WorkshopBooking");
+
             ThrowIfUnauthorized(response);
 
             if (!response.IsSuccessStatusCode)
             {
                 return null;
             }
-            return await response.Content.ReadFromJsonAsync<List<WorkshopBooking>>();
 
+            return await response.Content
+                .ReadFromJsonAsync<List<WorkshopBooking>>();
         }
 
-        public async Task<WorkshopBooking?> UpdateAsync(WorkshopBooking request)
+        public async Task<WorkshopBooking?> UpdateAsync(
+            WorkshopBooking request)
         {
             AddToken();
 
-            var response = await _httpClient.PutAsJsonAsync($"api/WorkshopBooking/{request.WorkshopBookingID}", request);
+            var response = await _httpClient.PutAsJsonAsync(
+                $"api/WorkshopBooking/{request.WorkshopBookingID}",
+                request);
+
             ThrowIfUnauthorized(response);
 
             if (!response.IsSuccessStatusCode)
             {
                 return null;
             }
-            return await response.Content.ReadFromJsonAsync<WorkshopBooking>();
 
+            return await response.Content
+                .ReadFromJsonAsync<WorkshopBooking>();
         }
-
 
         public async Task<bool> DeleteAsync(int? id)
         {
             AddToken();
 
-            var response = await _httpClient.DeleteAsync($"api/WorkshopBooking/{id}");
+            var response = await _httpClient.DeleteAsync(
+                $"api/WorkshopBooking/{id}");
+
             ThrowIfUnauthorized(response);
 
             return response.IsSuccessStatusCode;
         }
 
-        public async Task<WorkshopBooking?> GetWorkshopBookingByIdAsync(int id)
+        public async Task<WorkshopBooking?>
+            GetWorkshopBookingByIdAsync(int id)
         {
             AddToken();
 
-            var response = await _httpClient.GetAsync($"api/WorkshopBooking/{id}");
-            ThrowIfUnauthorized(response);
+            var response = await _httpClient.GetAsync(
+                $"api/WorkshopBooking/{id}");
 
-            if (response.IsSuccessStatusCode)
-            {
-                return await response.Content.ReadFromJsonAsync<WorkshopBooking>();
-            }
-            return null;
-
-        }
-
-        public async Task<List<IndividualBooking>?> SearchByInstitutionName(string institutionName)
-        {
-            var response = await _httpClient.GetAsync($"api/IndividualBooking/search-by-institutionname?institutionName={institutionName}");
-            if (response.IsSuccessStatusCode)
-            {
-                return await response.Content.ReadFromJsonAsync<List<IndividualBooking>>();
-            }
-            return null;
-        }
-
-        public async Task<List<IndividualBooking>?> FilterByTopic(string topic)
-        {
-            var response = await _httpClient.GetAsync($"api/IndividualBooking/filter-by-topic?topic={topic}");
-            if (response.IsSuccessStatusCode)
-            {
-                return await response.Content.ReadFromJsonAsync<List<IndividualBooking>>();
-            }
-            return null;
-        }
-
-        public List<WorkshopBooking> UpcomingSessions(IEnumerable<WorkshopBooking> bookings)
-        {
-            return bookings.Where(b =>
-                b.Date_and_Time > DateTime.Now &&
-                (b.Status == "Scheduled" || b.Status == "Rescheduled")
-            ).ToList();
-        }
-
-        public async Task<List<WorkshopBooking>?> GetClientWorkshopsAsync()
-        {
-            AddToken();
-
-            var response = await _httpClient.GetAsync("api/WorkshopBooking/client-workshops");
             ThrowIfUnauthorized(response);
 
             if (!response.IsSuccessStatusCode)
@@ -148,7 +124,38 @@ namespace ReCenterHub.Services
                 return null;
             }
 
-            return await response.Content.ReadFromJsonAsync<List<WorkshopBooking>>();
+            return await response.Content
+                .ReadFromJsonAsync<WorkshopBooking>();
+        }
+
+        public List<WorkshopBooking> UpcomingSessions(
+            IEnumerable<WorkshopBooking> bookings)
+        {
+            return bookings
+                .Where(b =>
+                    b.Date_and_Time > DateTime.Now &&
+                    (b.Status == "Scheduled" ||
+                     b.Status == "Rescheduled"))
+                .ToList();
+        }
+
+        public async Task<List<WorkshopBooking>?>
+            GetClientWorkshopsAsync()
+        {
+            AddToken();
+
+            var response = await _httpClient.GetAsync(
+                "api/WorkshopBooking/client-workshops");
+
+            ThrowIfUnauthorized(response);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return null;
+            }
+
+            return await response.Content
+                .ReadFromJsonAsync<List<WorkshopBooking>>();
         }
     }
-    }
+}
