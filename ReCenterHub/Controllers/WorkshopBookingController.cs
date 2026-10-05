@@ -60,7 +60,10 @@ namespace ReCenterHub.Controllers
         [HttpGet]
         public IActionResult Create()
         {
-            return View();
+            return View(new WorkshopBooking
+            {
+                Date_and_Time = DateTime.Today.AddDays(7).AddHours(9)
+            });
         }
 
         [HttpPost]

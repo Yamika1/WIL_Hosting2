@@ -61,7 +61,10 @@ namespace ReCenterHub.Controllers
         [HttpGet]
         public IActionResult Create()
         {
-            return View();
+            return View(new IndividualBooking
+            {
+                Date_and_Time = DateTime.Today.AddDays(1).AddHours(9)
+            });
         }
 
 
