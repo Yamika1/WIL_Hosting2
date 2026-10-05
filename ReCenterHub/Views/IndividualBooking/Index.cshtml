@@ -10,8 +10,6 @@
     <h1>My Individual Sessions</h1>
     <p>You have @upcoming upcoming session@(upcoming == 1 ? "" : "s").</p>
 </div>
-        <a asp-action="Create" class="btn btn-primary">+ New Booking</a>
-    </div>
 
 <div class="table-card">
     <div class="table-toolbar">
@@ -28,7 +26,6 @@
 
         <a asp-action="Create" class="btn-brand">+ New booking</a>
     </div>
-    </form>
 
     @if (Model == null || !Model.Any())
     {
@@ -65,7 +62,7 @@
                             <td><span class="status-chip status-@status.ToLower()">@status</span></td>
                             <td>
                                 <div class="row-actions">
-                                    @if (!BookingStatuses.IsClosed(booking.Status))
+                                    @if (!BookingStatuses.isClosed(booking.Status))
                                     {
                                         <a asp-action="Update"
                                            asp-route-id="@booking.IndividualBookingID"

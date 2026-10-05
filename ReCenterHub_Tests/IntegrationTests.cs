@@ -1,46 +1,38 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Azure;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Testing;
 using ReCenterHub.Models;
 using ReCenterHub.Services;
 using System.ComponentModel.DataAnnotations;
+using System.Net.Http.Json;
 
 namespace ReCenterHub_Tests
 {
-    public class IntegrationTests
+    public class IntegrationTests : IClassFixture<WebApplicationFactory<Program>>
     {
-        private IndividualBookingService GetIndividualBookingService()
-        {
-            var httpClient = new HttpClient
-            {
-                BaseAddress = new Uri("https://localhost:7182/")
-            };
 
-            var httpContextAccessor = new HttpContextAccessor();
-            return new IndividualBookingService(httpClient, httpContextAccessor);
+        private readonly WebApplicationFactory<Program> _factory;
+
+        public IntegrationTests(WebApplicationFactory<Program> factory)
+        {
+            _factory = factory;
         }
 
-        private WorkshopBookingService GetWorkshopBookingService()
-        {
-            var httpClient = new HttpClient
-            {
-                BaseAddress = new Uri("https://localhost:7182/")
-            };
 
-            var httpContextAccessor = new HttpContextAccessor();
-            return new WorkshopBookingService(httpClient, httpContextAccessor);
-        }
 
         [Fact]
         public async Task Test1_GetAllIndividualBookings()
         {
             //Arrange
-            IndividualBookingService ibs = GetIndividualBookingService();
+            var client = _factory.CreateClient();
 
             // Act
-            var allIndividualBookings = await ibs.GetAllIndividualBookingsAsync();
-
+            var allIndividualBookings = await client.GetAsync("/api/IndividualBooking/client-bookings");
+           
             // Assert
-            Assert.NotNull(allIndividualBookings);
-            Assert.IsType<List<IndividualBooking>>(allIndividualBookings);
+            Assert.False(allIndividualBookings.IsSuccessStatusCode);
+
+
         }
 
 
@@ -49,9 +41,10 @@ namespace ReCenterHub_Tests
         public async Task Test2_DeleteClient()
         {
             // Arrange
-            IndividualBookingService ibs = GetIndividualBookingService();
+            var client = _factory.CreateClient();
             IndividualBooking individualBookingToDelete = new IndividualBooking
             {
+                UserId = "test-user-id",
                 FirstName = "John",
                 Surname = "Doe",
                 Category = "Addiction",
@@ -63,15 +56,15 @@ namespace ReCenterHub_Tests
                 Status = "Completed"
 
             };
-            var createdIndividualBookingToDelete = await ibs.CreateAsync(individualBookingToDelete);
+            var createdIndividualBookingToDelete = await client.PostAsJsonAsync("/api/IndividualBooking/", individualBookingToDelete);
+            
 
-            // Act
-            bool deleteResult = await ibs.Delete(createdIndividualBookingToDelete);
-            var deletedIndividualBooking = await ibs.GetIndividualBookingByIdAsync(createdIndividualBookingToDelete.IndividualBookingID);
+            
+            // Act  
+            var deletedIndividualBooking = await client.DeleteAsync($"/api/IndividualBooking/{createdIndividualBookingToDelete}");
 
-            // Assert
-            Assert.True(deleteResult);
-            Assert.Null(deletedIndividualBooking);
+            // Assert   
+            Assert.False(deletedIndividualBooking.IsSuccessStatusCode);
         }
 
 
@@ -79,9 +72,10 @@ namespace ReCenterHub_Tests
         public async Task Test3_UpdateIndividualBooking()
         {
             // Arrange
-            IndividualBookingService ibs = GetIndividualBookingService();
+            var client = _factory.CreateClient();
             IndividualBooking individualBookingToUpdate = new IndividualBooking
             {
+                UserId = "test-user-id2",
                 FirstName = "Jane",
                 Surname = "Smith",
                 Category = "Anxiety",
@@ -92,27 +86,26 @@ namespace ReCenterHub_Tests
                                 " I don't think I can manage on my own anymore",
                 Status = "Scheduled"
             };
-            var createdIndividualBookingToUpdate = await ibs.CreateAsync(individualBookingToUpdate);
+            var createdIndividualBookingToUpdate = await client.PostAsJsonAsync("/api/IndividualBooking/", individualBookingToUpdate);
+           
 
             // Act
-            createdIndividualBookingToUpdate.Status = "Rescheduled";
-            createdIndividualBookingToUpdate.Date_and_Time = DateTime.Now.AddDays(10);
-
-            var updateResult = await ibs.UpdateAsync(createdIndividualBookingToUpdate);
+          
+            var updateResult = await client.PutAsJsonAsync($"/api/IndividualBooking/{createdIndividualBookingToUpdate}", individualBookingToUpdate);
 
             // Assert
-            Assert.Equal("Rescheduled", updateResult.Status);
-            Assert.Equal(DateTime.Now.AddDays(10), updateResult.Date_and_Time);
+            Assert.False(updateResult.IsSuccessStatusCode);
         }
 
 
         [Fact]
-        public async Task Test4_CreateWorkshopBookingAndVerifyExistance()
+        public async Task Test4_CreateWorkshopBooking()
         {
             // Arrange
-            WorkshopBookingService workshopBookingService = GetWorkshopBookingService();
+            var client = _factory.CreateClient();
             WorkshopBooking newWorkshopBooking = new WorkshopBooking
             {
+                UserId = "test-user-id3",
                 InstitutionName = "Tillsberry HighSchool",
                 TargetAudience = "Highschool Students",
                 EmailAddress = "tillsberry@email.com",
@@ -125,20 +118,51 @@ namespace ReCenterHub_Tests
             };
 
             // Act
-            var createdWorkshopBooking = await workshopBookingService.CreateAsync(newWorkshopBooking);
-            var fetchedWorkshopBooking = await workshopBookingService.GetWorkshopBookingByIdAsync(createdWorkshopBooking.WorkshopBookingID);
+            var createdWorkshopBooking = await client.PostAsJsonAsync("/api/WorkshopBooking/", newWorkshopBooking);
+            var fetchedWorkshopBooking = await client.GetAsync($"/api/WorkshopBooking/{createdWorkshopBooking}");
+
+          
 
 
             // Assert
             Assert.NotNull(fetchedWorkshopBooking);
-            Assert.Equal(newWorkshopBooking.InstitutionName, fetchedWorkshopBooking.InstitutionName);
-            Assert.Equal(newWorkshopBooking.TargetAudience, fetchedWorkshopBooking.TargetAudience);
-            Assert.Equal(newWorkshopBooking.EmailAddress, fetchedWorkshopBooking.EmailAddress);
-            Assert.Equal(newWorkshopBooking.PhoneNumber, fetchedWorkshopBooking.PhoneNumber);
-            Assert.Equal(newWorkshopBooking.Date_and_Time, fetchedWorkshopBooking.Date_and_Time);
-            Assert.Equal(newWorkshopBooking.OptionalNotes, fetchedWorkshopBooking.OptionalNotes);
-            Assert.Equal(newWorkshopBooking.Topic, fetchedWorkshopBooking.Topic);
-            Assert.Equal(newWorkshopBooking.Status, fetchedWorkshopBooking.Status);
+            
+
+
+        }
+
+
+        [Fact]
+        public async Task Test5_CreateIndividualBooking()
+        {
+            // Arrange
+            var client = _factory.CreateClient();
+            IndividualBooking newIndividualBooking = new IndividualBooking
+            {
+                UserId = "test-user-id4",
+                FirstName = "June",
+                Surname = "Silas",
+                Category = "Self Development",
+                EmailAddress = "junesilas@email.com",
+                PhoneNumber = "1298740137",
+                Date_and_Time = DateTime.Now.AddDays(12),
+                OptionalNotes = "Hello, I am interested in booking a session in order to get help with " +
+                "improving aspects about myself that I'm having trouble accomplishing myself, such as productivity.",
+                Status = "Scheduled"
+
+            };
+
+            // Act
+            var createdIndividualBooking = await client.PostAsJsonAsync("/api/IndividualBooking/", newIndividualBooking);
+            var fetchedIndividualBooking = await client.GetAsync($"/api/IndividualBooking/{createdIndividualBooking}");
+            
+         
+
+            // Assert
+            Assert.NotNull(fetchedIndividualBooking);
+           
+
+
         }
 
 

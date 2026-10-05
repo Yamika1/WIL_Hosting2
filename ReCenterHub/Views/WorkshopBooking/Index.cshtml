@@ -10,8 +10,6 @@
     <h1>My Workshop Bookings</h1>
     <p>You have @upcoming upcoming workshop@(upcoming == 1 ? "" : "s").</p>
 </div>
-        <a asp-action="Create" class="btn btn-primary">+ Book a Workshop</a>
-    </div>
 
 <div class="table-card">
     <div class="table-toolbar">
@@ -26,7 +24,6 @@
 
         <a asp-action="Create" class="btn-brand">+ Book a workshop</a>
     </div>
-    </form>
 
     @if (Model == null || !Model.Any())
     {
@@ -63,7 +60,7 @@
                             <td><span class="status-chip status-@status.ToLower()">@status</span></td>
                             <td>
                                 <div class="row-actions">
-                                    @if (!BookingStatuses.IsClosed(booking.Status))
+                                    @if (!BookingStatuses.isClosed(booking.Status))
                                     {
                                         <a asp-action="Update"
                                            asp-route-id="@booking.WorkshopBookingID"

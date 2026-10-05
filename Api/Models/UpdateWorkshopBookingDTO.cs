@@ -31,3 +31,4 @@ namespace Api.Models
         [Display(Name = "Status")]
         public string? Status { get; set; }
     }
+}

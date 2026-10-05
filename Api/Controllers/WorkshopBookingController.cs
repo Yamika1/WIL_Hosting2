@@ -81,7 +81,8 @@ namespace Api.Controllers
             return Ok(WorkshopBooking);
         }
 
-        [HttpPost(ActionName="Update")]
+        [HttpPost]
+        [ActionName("Update")]
         [Route("{id:int}")]
         [Authorize(Roles = "Client,Admin")]
         public IActionResult UpdateWorkshop(int id, WorkshopBooking WorkshopBookingentity) {
@@ -107,7 +108,8 @@ namespace Api.Controllers
             return Ok(workshopBooking); 
         }
 
-        [HttpPost(ActionName="Delete")]
+        [HttpPost]
+        [ActionName("Delete")]
         [Authorize(Roles = "Admin")]
         [Route("{id:int}")]
         public IActionResult DeleteWorkshopBooking(int id)
@@ -129,23 +131,7 @@ namespace Api.Controllers
             return Ok();
         }
 
-        [HttpGet("search-by-institutionname")]
-        [Authorize(Roles="Admin")]
-        public async Task<IEnumerable<WorkshopBooking>> SearchByInstitutionName(string institutionName)
-        {
-            var statusQuery = from booking in _authDbContext.WorkshopBooking select booking;
-            var searchResults = await statusQuery.Where(c => c.InstitutionName.Contains(institutionName)).ToListAsync();
-            return searchResults.ToList();
-        }
-
-        [HttpGet("filter-by-topic")]
-        [Authorize(Roles="Admin")]
-        public async Task<IEnumerable<WorkshopBooking>> FilterByTopic(string topic)
-        {
-            var statusQuery = from booking in _authDbContext.WorkshopBooking select booking;
-            var searchResults = await statusQuery.Where(c => c.Topic == topic).ToListAsync();
-            return searchResults.ToList();
-        }
+        
         
 
 

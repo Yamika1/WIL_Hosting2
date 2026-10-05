@@ -80,12 +80,13 @@ namespace ReCenterHub.Services
             return await response.Content.ReadFromJsonAsync<WorkshopBooking>();
 
         }
+        
 
-        public async Task<bool> Delete(WorkshopBooking request)
+        public async Task<bool> DeleteAsync(int? id)
         {
             AddToken();
 
-            var response = await _httpClient.DeleteAsync($"api/WorkshopBooking/{request.WorkshopBookingID}");
+            var response = await _httpClient.DeleteAsync($"api/WorkshopBooking/{id}");
             ThrowIfUnauthorized(response);
 
             return response.IsSuccessStatusCode;
@@ -133,5 +134,12 @@ namespace ReCenterHub.Services
                 (b.Status == "Scheduled" || b.Status == "Rescheduled")
             ).ToList();
         }
+
+        internal async Task<List<WorkshopBooking>?> GetClientWorkshopsAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        
     }
 }

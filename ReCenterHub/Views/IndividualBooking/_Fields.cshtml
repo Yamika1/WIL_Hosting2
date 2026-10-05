@@ -15,10 +15,13 @@
 
     <div class="form-field">
         <label asp-for="Category" class="form-label"></label>
-        <select asp-for="Category"
-                asp-items="@(new SelectList(BookingOptions.IndividualCategories))"
-                class="form-select">
+        <select asp-for="Category" class="form-select">
             <option value="">Select a category</option>
+            <option value="Trauma">Trauma</option>
+            <option value="Abuse">Abuse</option>
+            <option value="Addiction">Other</option>
+            <option value="Self Development">Other</option>
+            <option value="Other">Other</option>
         </select>
         <span asp-validation-for="Category" class="field-validation-error"></span>
     </div>
