@@ -48,20 +48,21 @@ namespace Api.Controllers
         }
 
         [HttpGet("client-workshops")]
-        [Authorize(Roles = "Client")]
+        [Authorize(Roles = "Client,Admin")]
         public IActionResult GetClientBookings()
         {
             var userId = User.FindFirstValue(
                 ClaimTypes.NameIdentifier);
 
-            var bookings = _authDbContext.IndividualBooking
+            var bookings = _authDbContext.WorkshopBooking
                 .Where(b => b.UserId == userId)
                 .ToList();
             return Ok(bookings);
 
         }
 
-        [HttpPost][Authorize(Roles = "Client")]
+        [HttpPost]
+        [Authorize(Roles = "Client")]
         public IActionResult AddWorkshopBookings(AddWorkshopBookingDTO WorkshopBookingentity) { 
             
             var WorkshopBooking = new WorkshopBooking() {

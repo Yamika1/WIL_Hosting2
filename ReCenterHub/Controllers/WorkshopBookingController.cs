@@ -8,7 +8,7 @@ using static ReCenterHub.Services.ConcreteObserver;
 
 namespace ReCenterHub.Controllers
 {
-    [Authorize(Roles = "Client")]
+    [Authorize(Roles = "Client,Admin")]
     public class WorkshopBookingController : Controller
     {
         private readonly WorkshopBookingService _wbs;
@@ -137,23 +137,23 @@ namespace ReCenterHub.Controllers
 
 
         
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> Delete(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            var deleted = await _wbs.DeleteAsync(id);
+        //    var deleted = await _wbs.DeleteAsync(id);
 
-            TempData[deleted ? "Notification" : "Error"] = deleted
-                ? "The workshop booking was deleted."
-                : "The workshop booking could not be deleted.";
+        //    TempData[deleted ? "Notification" : "Error"] = deleted
+        //        ? "The workshop booking was deleted."
+        //        : "The workshop booking could not be deleted.";
 
-            return RedirectToAction(nameof(Index));
-        }
+        //    return RedirectToAction(nameof(Index));
+        //}
     }
 }
 

@@ -33,6 +33,7 @@ namespace ReCenterHub.Services
             if (response.StatusCode == HttpStatusCode.Unauthorized)
             {
                 throw new ApiUnauthorizedException();
+
             }
         }
 
@@ -80,7 +81,7 @@ namespace ReCenterHub.Services
             return await response.Content.ReadFromJsonAsync<WorkshopBooking>();
 
         }
-        
+
 
         public async Task<bool> DeleteAsync(int? id)
         {
@@ -135,11 +136,19 @@ namespace ReCenterHub.Services
             ).ToList();
         }
 
-        internal async Task<List<WorkshopBooking>?> GetClientWorkshopsAsync()
+        public async Task<List<WorkshopBooking>?> GetClientWorkshopsAsync()
         {
-            throw new NotImplementedException();
-        }
+            AddToken();
 
-        
+            var response = await _httpClient.GetAsync("api/WorkshopBooking/client-workshops");
+            ThrowIfUnauthorized(response);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return null;
+            }
+
+            return await response.Content.ReadFromJsonAsync<List<WorkshopBooking>>();
+        }
     }
-}
+    }
