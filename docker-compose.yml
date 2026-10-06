@@ -21,7 +21,7 @@ services:
   glms-backend-api:
     build:
       context: .
-      dockerfile: Web_Api/Dockerfile
+      dockerfile: Api/Dockerfile
     container_name: glms-backend-api
     depends_on:
       sql-server-db:
@@ -37,7 +37,7 @@ services:
   glms-frontend-web:
     build:
       context: .
-      dockerfile: ProjectPOE_Prog3A/Dockerfile
+      dockerfile: ReCenterHub/Dockerfile
     container_name: glms-frontend-web
     depends_on:
       glms-backend-api:
@@ -45,7 +45,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=8080
-      - ConnectionStrings__ProjectPOE_Prog3AContext=Server=sql-server-db;Database=NewApiProg3A;User Id=sa;Password=Pregasen@146#;TrustServerCertificate=True;MultipleActiveResultSets=true;
+      - ConnectionStrings__DefaultConnection=Yamika2005;Database=Re-CenterHubDatabaseTwo;User Id=sa;Password=Pregasen@146#;TrustServerCertificate=True;MultipleActiveResultSets=true;
     ports:
       - "8082:8080"
     restart: on-failure

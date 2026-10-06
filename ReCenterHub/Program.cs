@@ -13,17 +13,17 @@ builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddHttpClient<ApiAuthService>(client =>
 {
-    client.BaseAddress = new Uri("https://localhost:7182/");
+    client.BaseAddress = new Uri("http://glms-backend-api:8080/");
 });
 
 builder.Services.AddHttpClient<IndividualBookingService>(client =>
 {
-    client.BaseAddress = new Uri("https://localhost:7182/");
+    client.BaseAddress = new Uri("http://glms-backend-api:8080/");
 });
 
 builder.Services.AddHttpClient<WorkshopBookingService>(client =>
 {
-    client.BaseAddress = new Uri("https://localhost:7182/");
+    client.BaseAddress = new Uri("http://glms-backend-api:8080/");
 });
 
 builder.Services.AddDistributedMemoryCache();
