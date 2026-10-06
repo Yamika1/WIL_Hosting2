@@ -1,5 +1,8 @@
 <Solution>
   <Project Path="Api/Api.csproj" Id="5c6dc3df-ae17-4ea8-8f29-b139e05b9813" />
+  <Project Path="docker-compose.dcproj">
+    <Build />
+  </Project>
   <Project Path="ReCenterHub/ReCenterHub.csproj" />
   <Project Path="ReCenterHub_Tests/ReCenterHub_Tests.csproj" Id="3f05e4c4-9f03-4c68-8046-3fcf734ff535" />
 </Solution>
